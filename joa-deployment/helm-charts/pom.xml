@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+ 
+    <parent>
+        <groupId>com.x.hhqs.joa-deployment</groupId>
+        <artifactId>joa-deployment</artifactId>
+        <version>${revision}</version>
+    </parent>
+     
+    <artifactId>helm-charts</artifactId>
+    <groupId>com.x.hhqs.joa-deployment</groupId>
+    <name>Helm charts</name>
+    <packaging>pom</packaging>
+ 
+    <properties>
+        <helm.artifactory.username>""</helm.artifactory.username>
+        <helm.artifactory.password>""</helm.artifactory.password>
+        <helm.chart.version>${project.version}</helm.chart.version>
+        <app.version>${project.version}</app.version>
+        <mistral.app.version>20.11.0-rel.18-SNAPSHOT</mistral.app.version>
+        <helm.mistral.chart.version>20.11.0-rel.18-SNAPSHOT-x-patch2</helm.mistral.chart.version>
+        <excludeSonar>true</excludeSonar>
+        <helm.joa-rt1.version>${helm.chart.version}</helm.joa-rt1.version>
+        <helm.joa-rt1.baseurl>${helm.repo.baseurl}</helm.joa-rt1.baseurl>
+        <helm.joa-alarm.version>${helm.chart.version}</helm.joa-alarm.version>
+        <helm.joa-alarm.baseurl>${helm.repo.baseurl}</helm.joa-alarm.baseurl>
+        <helm.joa-common.version>${helm.chart.version}</helm.joa-common.version>
+        <helm.joa-common.baseurl>${helm.repo.baseurl}</helm.joa-common.baseurl>
+    </properties>
+ 
+ 
+    <modules>
+        <module>joa-helm-charts-individual</module>
+        <module>joa-helm-charts-umbrella</module>
+    </modules>
+ 
+    <profiles>
+        <profile>
+            <id>helm-v2</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <helm.repo.baseurl>http://127.0.0.1:8879/charts</helm.repo.baseurl>
+                <helm.repo.url>${helm.repo.baseurl}</helm.repo.url>
+                <helm.repo.name>dummy</helm.repo.name>
+                <maven.helm.plugin.version>${maven.helm2.plugin.version}</maven.helm.plugin.version>
+                <helm.repo.type>ARTIFACTORY</helm.repo.type>
+            </properties>
+        </profile>
+    </profiles>
+ 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

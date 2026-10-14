@@ -1,0 +1,56 @@
+{{- if and (eq .Values.global.mode "cluster") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-hs
+  namespace: {{ .Values.namespace }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.serverPort }}
+      protocol: TCP
+      name: http
+    - port: {{ add .Values.service.port 1000}}
+      name: client-rpc
+      targetPort: {{add .Values.serverPort 1000}}
+    - port: {{add .Values.service.port 1001}}
+      name: raft-rpc
+      targetPort: {{add .Values.serverPort 1001}}
+  selector:
+    app.kubernetes.io/name: {{ include "nacos.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "nacos.service.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+  {{- toYaml .Values.service.labels | nindent 4 }}
+  annotations:
+  {{- toYaml .Values.service.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.serverPort }}
+      protocol: TCP
+      name: http
+      {{- if and (eq .Values.service.type "NodePort") (.Values.service.nodePort) }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+    - port: {{ add .Values.service.port 1000}}
+      name: client-rpc
+      targetPort: {{add .Values.serverPort 1000}}
+      {{- if and (eq .Values.service.type "NodePort") (.Values.service.nodePort) }}
+      nodePort: {{add .Values.service.nodePort 1000}}
+      {{- end }}
+    - port: {{add .Values.service.port 1001}}
+      name: raft-rpc
+      targetPort: {{add .Values.serverPort 1001}}
+  selector:
+    app.kubernetes.io/name: {{ include "nacos.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

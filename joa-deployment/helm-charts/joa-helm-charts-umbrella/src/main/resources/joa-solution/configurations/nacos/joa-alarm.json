@@ -1,0 +1,19 @@
+[
+  {
+    "dataId": "joa-alarm.properties",
+    "group": "DEFAULT_GROUP",
+    "namespaceId": "public",
+    "type": "properties",
+    "tag": "2509.01",
+    "data": {
+      "joa-alarm.sftp.type": "sftp",
+      "joa-alarm.sftp.path": "/export/alarm",
+      "joa-alarm.sftp.ip": "192.168.0.1",
+      "joa-alarm.sftp.port": 22,
+      "joa-alarm.sftp.user": "",
+      "joa-alarm.sftp.password": "",
+      "joa-alarm.sftp.file-delete": true,
+      "joa-alarm.sftp.file-auto-delete-strategy.keep": "3 days"
+    }
+  }
+]

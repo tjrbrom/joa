@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.x.hhqs.joa-deployment</groupId>
+  <artifactId>joa-deployment</artifactId>
+  <packaging>pom</packaging>
+  <scm>
+        <connection>scm:git:gerrit.app.y.com:29418/HHQS/parent-poms</connection>
+    </scm>
+  <version>${revision}</version>
+  <name>JOA deployment POM</name>
+  <modules>
+    <module>helm-charts</module>
+  </modules>
+  <properties>
+      <revision>1.0.0-SNAPSHOT</revision>
+      <excludeSonar>true</excludeSonar>
+      <artifactory.url>artifactory.net.x.com</artifactory.url>
+      <helm.repo.artifactory>"@artifactory"</helm.repo.artifactory>
+      <helm.repo.baseurl>http://127.0.0.1:30879</helm.repo.baseurl>
+      <helm.repo.url>${helm.repo.baseurl}/api/charts</helm.repo.url>
+      <helm.repo.type>CHARTMUSEUM</helm.repo.type>
+      <flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
+      <maven.helm.plugin.version>5.6</maven.helm.plugin.version>
+      <maven.helm2.plugin.version>2.6</maven.helm2.plugin.version>
+      <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
+      <maven.resources.plugin.version>2.7</maven.resources.plugin.version>
+      <maven.buildnumber.plugin.version>1.4</maven.buildnumber.plugin.version>
+      <!-- RT1 Adapter -->
+      <joa-rt1agent.version>latest</joa-rt1agent.version>
+      <joa-rt1sa.version>latest</joa-rt1sa.version>
+      <joa-rt1query.version>latest</joa-rt1query.version>
+      <joa-tools.version>latest</joa-tools.version>
+      <joa-alarm.version>latest</joa-alarm.version>
+      <joa-common.version>latest</joa-common.version>
+      <maven.dependency.plugin.version>3.7.1</maven.dependency.plugin.version>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${flatten-maven-plugin.version}</version>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

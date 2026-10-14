@@ -1,0 +1,23 @@
+#all files of pattern
+**/.project
+**/.settings
+**/target/
+**/target.tar
+**/src/test/java/META-INF/
+**/.classpath
+**/*.gpg
+# all iml files
+**/*.iml
+**/*.idea
+**/*cookie.txt
+**/*.log
+**/META-INF/
+**/*.jar*
+# all flattened pom files
+**/.flattened-pom.xml
+**/.vscode
+tmp
+__pycache__
+
+**/_foss_mvn_dep.txt
+

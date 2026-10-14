@@ -1,0 +1,19 @@
+[
+  {
+    "dataId": "joa-common.properties",
+    "group": "DEFAULT_GROUP",
+    "namespaceId": "public",
+    "type": "properties",
+    "tag": "2509.01",
+    "data": {
+      "core.rest.baseUrl": "${CORE_REST_BASEURL:-http://x-core-ac:8181}",
+      "core.rest.username": "${CORE_REST_USERNAME:-adminuser}",
+      "core.rest.password": "${CORE_REST_PASSWORD:-password}",
+      "core.virtualizer.target": "${CORE_VIRTUALIZER_TARGET:-devicemanager}",
+      "omc.city": "${OMC_CITY}",
+      "omc.vendor": "${OMC_VENDOR}",
+      "omc.category": "${OMC_CATEGORY}",
+      "omc.number": "${OMC_NUMBER}"
+    }
+  }
+]

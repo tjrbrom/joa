@@ -1,0 +1,91 @@
+{{- if (and .Values.global.rbac.enabled .Values.serviceAccount.create ) }}
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ template "joa-infra.serviceAccountName" . }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-8"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "joa-infra.serviceAccountName" . }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-8"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create", "get", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "joa-infra.serviceAccountName" . }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-7"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+subjects:
+- kind: ServiceAccount
+  name: {{ template "joa-infra.serviceAccountName" . }}
+  namespace: {{ .Values.namespace }}
+  apiGroup: ""
+roleRef:
+  kind: Role
+  name: {{ template "joa-infra.serviceAccountName" . }}
+  apiGroup: rbac.authorization.k8s.io
+---
+{{- if and (index .Values "joa-rt1-mariadb-init" "enabled") .Values.tags.rt1 }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "joa.app" . }}-mariadb-init
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-6"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+spec:
+  backoffLimit: {{ index .Values "joa-rt1-mariadb-init" "spec" "backoffLimit" }}
+  activeDeadlineSeconds: {{ index .Values "joa-rt1-mariadb-init" "spec" "activeDeadlineSeconds" }}
+  ttlSecondsAfterFinished: {{ index .Values "joa-rt1-mariadb-init" "spec" "ttlSecondsAfterFinished" }}
+  template:
+    spec:
+      serviceAccountName: {{ template "joa-infra.serviceAccountName" . }}
+      restartPolicy: Never
+      containers:
+        - name: {{ template "joa.app" . }}-mariadb-init
+          image: "{{ tpl .Values.kubectl.image.registry . }}/{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+          securityContext:
+            runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+            allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation | default false }}
+            privileged: {{ .Values.securityContext.privileged | default false }}
+            capabilities:
+              drop:
+                - all
+          resources:
+            {}
+          command:
+            - sh
+            - -c
+            - |
+              pod=$(kubectl get pods --namespace default --no-headers=true | grep mariadb | grep Running | sort -r | awk '{ print $1 }' | tail -1)
+              kubectl exec ${pod} -- mysql -u{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_USER" }} -p{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_PASSWORD" }} -e "select * from mysql.user;"
+              kubectl exec ${pod} -- mysql -u{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_USER" }} -p{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_PASSWORD" }} -e "CREATE USER IF NOT EXISTS '{{ .Values.nacos.storage.db.username }}'@'%' IDENTIFIED BY '{{ .Values.nacos.storage.db.password }}';"
+              kubectl exec ${pod} -- mysql -u{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_USER" }} -p{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_PASSWORD" }} -e "GRANT ALL PRIVILEGES ON *.* TO '{{ .Values.nacos.storage.db.username }}'@'%'"
+              kubectl exec ${pod} -- mysql -u{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_USER" }} -p{{ index .Values "joa-rt1-mariadb-init" "env" "MARIADB_PASSWORD" }} -e "FLUSH PRIVILEGES;"  
+{{- end }}
+{{- end }}

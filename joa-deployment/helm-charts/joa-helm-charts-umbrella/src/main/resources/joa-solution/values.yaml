@@ -1,0 +1,169 @@
+# Default values for core.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+ 
+tags:
+  rt1: true
+  alarm: true
+  mds: true
+
+#NOTE
+# EITHER keep the line uncommented
+# OR keep it commented
+# NEVER set it to enabled: false
+global:
+  joa-rt1agent:
+    #enabled: true
+  joa-rt1sa:
+    #enabled: true
+  joa-rt1query:
+    #enabled: true
+  joa-alarm:
+    #enabled: true
+  joa-mds:
+    #enabled: true
+  registry: ${artifactory.url}
+  #securityMode: keycloak
+  #keycloakUrl: https://core-sso-headless:8443/core-sso
+  i18n: zh
+  coreHost: 127.0.0.1
+  SPRING_CLOUD_NACOS_SERVER_ADDR: joa-nacos-cs
+  CORE_REST_BASEURL: http://x-core-ac:8181
+  CORE_REST_USERNAME: adminuser
+  CORE_REST_PASSWORD: password
+  CORE_VIRTUALIZER_TARGET: devicemanager
+  # CORE_WEBDAV_INSTANCE_NAME: x-core-av
+  # CORE_ALARM_ALLOWED_ORIGINS: x-core-ac_ALARM,x-core-av_ALARM
+  # CORE_ALARM_TOPIC: x-core-alarm
+  KEYCLOAK_USERNAME: admin
+  KEYCLOAK_PASSWORD: admin
+  KEYCLOAK_JOA_PASSWORD: "12345678"
+  OMC_CITY: "0000"
+  OMC_VENDOR: "NS"
+  OMC_CATEGORY: "CS"
+  OMC_NUMBER: "1"
+  persistence: &persistence true  # NOTE true for volume enabled
+
+
+nacosInitializer:
+  enabled: true
+  env:
+    CHECK_HEALTH_TIMEOUT_SECONDS: "900"
+    CHECK_HEALTH_RETRY_INTERVAL_SECONDS: "10"
+    NACOS_SERVER_ADDR: "{{ .Values.global.SPRING_CLOUD_NACOS_SERVER_ADDR }}"
+  spec:
+    backoffLimit: 1
+    activeDeadlineSeconds: 1800
+    ttlSecondsAfterFinished: 1800
+  joa-common:
+    env:
+      OMC_CITY: "{{ .Values.global.OMC_CITY }}"
+      OMC_VENDOR: "{{ .Values.global.OMC_VENDOR }}"
+      OMC_CATEGORY: "{{ .Values.global.OMC_CATEGORY }}"
+      OMC_NUMBER: "{{ .Values.global.OMC_NUMBER }}"
+      CORE_REST_BASEURL: "{{ .Values.global.CORE_REST_BASEURL }}"
+      CORE_REST_USERNAME: "{{ .Values.global.CORE_REST_USERNAME }}"
+      CORE_REST_PASSWORD: "{{ .Values.global.CORE_REST_PASSWORD }}"
+      CORE_VIRTUALIZER_TARGET: "{{ .Values.global.CORE_VIRTUALIZER_TARGET }}"
+  joa-rt1:
+    env:
+      CORE_HOST: "{{ .Values.global.coreHost }}"
+      JOA_MESSAGE_LANGUAGE: "{{ .Values.global.i18n }}"
+  joa-mds:
+    env:
+      AMS_USE_CONFIGURED_CREDENTIALS: '{{ (index .Values "joa-mds").env.AMS_USE_CONFIGURED_CREDENTIALS }}'
+      AMS_USERNAME: '{{ (index .Values "joa-mds").env.AMS_USERNAME }}'
+      AMS_PASSWORD: '{{ (index .Values "joa-mds").env.AMS_PASSWORD }}'
+  joa-alarm:
+    env: 
+      JOA_ALARM_MAX_ALARM_FILE_SIZE: '{{ (index .Values "joa-alarm").env.JOA_ALARM_MAX_ALARM_FILE_SIZE }}'
+      JOA_ALARM_VERSION: '{{ (index .Values "joa-alarm").env.JOA_ALARM_VERSION }}'
+      JOA_ALARM_ALARM_LOG_ALARM_DATA_MAX_HISTORY: '{{ (index .Values "joa-alarm").env.JOA_ALARM_ALARM_LOG_ALARM_DATA_MAX_HISTORY }}'
+      LOGGING_CONFIG: '{{ (index .Values "joa-alarm").env.LOGGING_CONFIG }}'
+      JOA_ALARM_ALARM_LOG_OAS_ALARM_MAX_HISTORY: '{{ (index .Values "joa-alarm").env.JOA_ALARM_ALARM_LOG_OAS_ALARM_MAX_HISTORY }}'
+      JOA_ALARM_DATABASE_KEEP_DAYS: '{{ (index .Values "joa-alarm").env.JOA_ALARM_DATABASE_KEEP_DAYS }}'
+      JOA_ALARM_AMS_SERVER_IS_START: '{{ (index .Values "joa-alarm").env.JOA_ALARM_AMS_SERVER_IS_START }}'
+
+joa-rt1-keyclock-init:
+  enabled: true
+  spec:
+    backoffLimit: 1
+    activeDeadlineSeconds: 1800
+    ttlSecondsAfterFinished: 1800
+    
+joaTools:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    repository: joa-tools
+    tag: ${joa-tools.version}
+    pullPolicy: IfNotPresent
+
+joa-rt1agent:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    tag: ${joa-rt1agent.version}
+  service:
+    type: NodePort
+    ports:
+      nodePort: 32015
+
+joa-rt1query:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    tag: ${joa-rt1query.version}
+  persistence:
+    enabled: *persistence
+
+joa-rt1sa:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    tag: ${joa-rt1sa.version}
+  persistence:
+    enabled: *persistence
+
+joa-alarm:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    tag: ${joa-alarm.version}
+  env:
+    SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR: "{{ .Values.global.SPRING_CLOUD_NACOS_SERVER_ADDR }}"
+    CORE_REST_BASEURL: "{{ .Values.global.CORE_REST_BASEURL }}"
+    CORE_REST_USERNAME: "{{ .Values.global.CORE_REST_USERNAME }}"
+    CORE_REST_PASSWORD: "{{ .Values.global.CORE_REST_PASSWORD }}"
+    CORE_WEBDAV_URL: "http://core-webdav:8080"
+    CORE_WEBDAV_USERNAME: "admin"
+    CORE_WEBDAV_PASSWORD: "xhhqs@123"
+    CORE_KAFKA_BOOTSTRAP_SERVERS: "core-kafka-headless:9092"
+    CORE_OPENSEARCH_URL: "https://core-indexsearch:9200"
+    CORE_OPENSEARCH_USERNAME: "coreesadmin"
+    CORE_OPENSEARCH_PASSWORD: "xhhqs@123"
+    CORE_KAFKA_CONSUMER_AUTO_OFFSET_RESET: "latest"
+    CORE_WEBDAV_INSTANCE_NAME: "x-core-av"
+    JOA_ALARM_SERVER_PORT: "31232"
+    JOA_ALARM_SERVER_CHANNEL_NUMBER: "1"
+    JOA_ALARM_KEYCLOAK_CREDENTIALS_SECRET: "a9428765-ddc4-485c-8bf1-897f39264eb2"
+    JOA_ALARM_KEYCLOAK_AUTH_SERVER_URL: "https://core-sso-headless:8443/core-sso"
+    JOA_ALARM_DATASOURCE_URL: "jdbc:mariadb://core-mariadb:3306"
+    JOA_ALARM_DATASOURCE_USERNAME: "joa"
+    JOA_ALARM_DATASOURCE_PASSWORD: "joa@123"
+    JOA_ALARM_XALARM2JOAALARM_ALLOWED_ORIGINS: "x-core-ac_ALARM,x-core-av_ALARM"
+    JOA_ALARM_XALARM2JOAALARM_TOPIC: "x-core-alarm"
+    JOA_ALARM_CORE_INTERNAL_INV_TOPIC: "CORE_INTERNAL_INVENTORY_COLLECTION_MODELS"
+    JOA_ALARM_MAX_ALARM_FILE_SIZE: "10"
+    JOA_ALARM_VERSION: "V2.1.0"
+    JOA_ALARM_ALARM_LOG_ALARM_DATA_MAX_HISTORY: "3"
+    LOGGING_CONFIG: "classpath:logback-spring.xml"
+    JOA_ALARM_ALARM_LOG_OAS_ALARM_MAX_HISTORY: "30"
+    JOA_ALARM_DATABASE_KEEP_DAYS: "7"
+    JOA_ALARM_AMS_SERVER_IS_START: "true"
+  persistence:
+    enabled: *persistence
+
+joa-mds:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    tag: ${joa-common.version}
+  env:
+    AMS_USE_CONFIGURED_CREDENTIALS: false
+    AMS_USERNAME: admin
+    AMS_PASSWORD: changeit

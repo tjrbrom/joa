@@ -1,0 +1,49 @@
+{
+    "global": {
+        "maven": "",
+        "docker": "",
+        "env": {}
+    },
+    "build": {
+        "maven": {
+            "joa-deployment": "-Dhelm.joa-rt1.version=${joa-rt1} -Dhelm.joa-alarm.version=${joa-alarm} -Dhelm.joa-common.version=${joa-common} -Dhelm.chart.version=${helm_tag} -Dprofile -Drevision=${build_tag}"
+        },
+        "docker": {}
+    },
+    "ut": {},
+    "sonar": {},
+    "deploy": {
+        "maven": {
+            "module": [],
+            "files": []
+        },
+        "maven_internal": {
+            "module": [],
+            "files": []
+        },
+        "docker_internal": {
+            "module": []
+        },
+        "helm": {
+            "module": [],
+            "files": [
+                {
+                    "source_path": "helm-charts/joa-helm-charts-individual/target/helm/repo/*.tgz",
+                    "target_path": "Core-JOA"
+                },
+                {
+                    "source_path": "helm-charts/joa-helm-charts-individual/target/helm/repo/*.tgz",
+                    "target_path": "Core-JOA"
+                }
+            ]
+        },
+        "docker": {
+            "module": []
+        }
+    },
+    "lint": {},
+    "foss": {
+        "ignore_repo": true,
+        "ignore_module_path": []
+    }
+}

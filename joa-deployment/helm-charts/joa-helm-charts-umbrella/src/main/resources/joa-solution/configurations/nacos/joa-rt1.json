@@ -1,0 +1,24 @@
+[
+  {
+    "dataId": "joa-rt1.properties",
+    "group": "DEFAULT_GROUP",
+    "namespaceId": "public",
+    "type": "properties",
+    "tag": "2509.01",
+    "data": {
+      "core.host": "${CORE_HOST:-127.0.0.1}",
+      "joa.message.language": "${JOA_MESSAGE_LANGUAGE:-zh}",
+      "paging.page_enable": "false",
+      "paging.page_max_num": 20,
+      "joa.rt1.connection.max-connections": 5,
+      "joa.rt1.connection.idle-timeout-minutes": 30,
+      "joa.rt1.connection.encoding": "UTF-8",
+      "joa.rt1.ponnbi-forwarding.enabled": false,
+      "joa.rt1.ponnbi-forwarding.host": "ponnbi",
+      "joa.rt1.ponnbi-forwarding.port": 12015,
+      "joa.rt1.ponnbi-forwarding.username": "manager",
+      "joa.rt1.ponnbi-forwarding.password": "123456",
+      "joa.rt1.ponnbi-forwarding.encoding": "UTF-8"
+    }
+  }
+]

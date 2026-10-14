@@ -1,0 +1,53 @@
+{{- if and 
+  .Values.tags.mds 
+  .Values.nacosInitializer.enabled 
+-}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "joa.app" . }}-mds-nacos-config
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+data:
+  {{ tpl (.Files.Glob "configurations/nacos/joa-mds.json").AsConfig . | nindent 2 }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "joa.app" . }}-mds-nacos-init
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+spec:
+  backoffLimit: {{ .Values.nacosInitializer.spec.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.nacosInitializer.spec.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ .Values.nacosInitializer.spec.ttlSecondsAfterFinished }}
+  template:
+    spec:
+      containers:
+        - name: {{ template "joa.app" . }}-mds-nacos-init
+          image: "{{ tpl .Values.joaTools.image.registry . }}/{{ .Values.joaTools.image.repository }}:{{ .Values.joaTools.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.joaTools.image.pullPolicy }}
+          command: ["java", "-jar", "./nacos/nacos-client.jar"]
+          env:
+          {{- range $key, $value := index .Values.nacosInitializer "env" }}
+            - name: {{ $key | quote }}
+              value: {{ tpl $value $ | quote }}
+          {{- end }}
+          {{- range $key, $value := index .Values.nacosInitializer "joa-mds" "env" }}
+            - name: {{ $key | quote }}
+              value: {{ tpl $value $ | quote }}
+          {{- end }}
+          volumeMounts:
+            - name: nacos-config
+              mountPath: /joa/nacos/config
+      restartPolicy: Never
+      volumes:
+        - name: nacos-config
+          configMap:
+            name: {{ template "joa.app" . }}-mds-nacos-config
+{{- end }}

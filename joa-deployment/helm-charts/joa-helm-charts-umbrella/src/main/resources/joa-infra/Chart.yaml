@@ -1,0 +1,11 @@
+apiVersion: v2
+name: joa-infra
+description: A Helm chart for JOA Infra
+version: ${helm.chart.version}
+appVersion: ${app.version}
+
+dependencies:
+  - name: nacos
+    repository:  ${helm.repo.baseurl}
+    condition: nacos.enabled,global.nacos.enabled  
+    version: ${helm.chart.version}

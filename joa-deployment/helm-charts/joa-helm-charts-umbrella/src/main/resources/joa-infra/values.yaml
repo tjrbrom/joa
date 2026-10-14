@@ -1,0 +1,70 @@
+# Default values for joa-infra.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#NOTE
+# EITHER keep the line uncommented
+# OR keep it commented
+# NEVER set it to enabled: false
+tags:
+  rt1: true
+  
+global:
+  nacos:
+    #enabled: true
+  registry: ${artifactory.url}
+  rbac:
+    enabled: true
+
+namespace: default
+
+serviceAccount: 
+  create: true
+  name: joa-rt1-sa
+
+############################create joa user in mariadb###########################
+joa-rt1-mariadb-init:
+  enabled: true
+  spec:
+    backoffLimit: 1
+    activeDeadlineSeconds: 1800
+    ttlSecondsAfterFinished: 1800
+  env:
+    MARIADB_USER: root
+    MARIADB_PASSWORD: mysql
+
+kubectl:
+  image:
+    registry: "{{ .Values.global.registry }}"
+    repository: hhqs-kubectl
+    tag: ${hhqs-kubectl.version}
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  privileged: false
+
+nacos:
+  image:
+    registry: ${artifactory.url}
+    repository: hhqs-nacos
+    tag: x-2.3.2-2
+  service:
+    nameOverride: joa-nacos-cs
+    type: NodePort
+    #nodePort: 8848
+  startupProbe:
+    initialDelaySeconds: 30
+  persistence:
+    enabled: false
+    hostPath: /joa/nacos
+  storage:
+    # embedded | mysql
+    type: mysql
+    db:
+      host: core-mariadb
+      name: nacos
+      port: 3306
+      username: joa
+      password: joa@123

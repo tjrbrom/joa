@@ -1,0 +1,17 @@
+[
+  {
+    "dataId": "joa-mds.properties",
+    "group": "DEFAULT_GROUP",
+    "namespaceId": "public",
+    "type": "properties",
+    "tag": "2509.01",
+    "data": {
+      "joa.mds.sync-task.interval-minutes": 60,
+      "joa.mds.sync-task.manager-types": "AMS,NAV",
+      "joa.mds.sync-task.intent-types": "device-mf",
+      "ams.use-configured-credentials": "${AMS_USE_CONFIGURED_CREDENTIALS:-false}",
+      "ams.username": "${AMS_USERNAME:-admin}",
+      "ams.password": "${AMS_PASSWORD:-changeit}"
+    }
+  }
+]

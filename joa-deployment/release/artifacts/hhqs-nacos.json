@@ -1,0 +1,17 @@
+{
+  "ImageName": "hhqs-nacos",
+  "Description": "customized nacos image based on hhqs-base image",
+  "DeliverToCustomer": false,
+  "DeliverToDevportal": false,
+  "GuidedInstallerSpecific": false,
+  "ApplianceSpecific": false,
+  "FeaturePackage": "NA",
+  "DeliverAsPoc": false,
+  "VanillaK8sImage": false,
+  "DeliverToNsp": false,
+  "ImportedImage": false,
+  "ImportedSource": "No",
+  "TeamName": "12938 : SDAN-CP-SHA CN Solution",
+  "RemovedStatus": "",
+  "ReplacingStatus": ""
+}

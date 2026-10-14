@@ -1,0 +1,41 @@
+apiVersion: v2
+name: joa-solution
+description: A Helm chart for JOA Solution
+version: ${helm.chart.version}
+appVersion: ${app.version}
+
+dependencies:
+  - name: joa-rt1agent
+    repository:  ${helm.joa-rt1.baseurl}
+    condition: joa-rt1agent.enabled,global.joa-rt1agent.enabled 
+    version: ${helm.joa-rt1.version}
+    tags:
+      - rt1
+
+  - name: joa-rt1query
+    repository:  ${helm.joa-rt1.baseurl}
+    condition: joa-rt1query.enabled,global.joa-rt1query.enabled 
+    version: ${helm.joa-rt1.version}
+    tags:
+      - rt1
+
+  - name: joa-rt1sa
+    repository:  ${helm.joa-rt1.baseurl}
+    condition: joa-rt1sa.enabled,global.joa-rt1sa.enabled 
+    version: ${helm.joa-rt1.version}
+    tags:
+      - rt1
+
+  - name: joa-alarm
+    repository:  ${helm.joa-alarm.baseurl}
+    condition: joa-alarm.enabled,global.joa-alarm.enabled
+    version: ${helm.joa-alarm.version}
+    tags:
+      - alarm
+
+  - name: joa-mds
+    repository:  ${helm.joa-common.baseurl}
+    condition: joa-mds.enabled,global.joa-mds.enabled
+    version: ${helm.joa-common.version}
+    tags:
+      - mds
