@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.x.hhqs.joa-infra</groupId>
+  <artifactId>joa-infra</artifactId>
+  <packaging>pom</packaging>
+  <version>${revision}</version>
+  <name>JOA Infra POM</name>
+
+  <modules>
+    <module>hhqs-nacos</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>17</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <revision>1.0.0-SNAPSHOT</revision>
+    <docker-maven-plugin.version>1.2.2</docker-maven-plugin.version>
+    <sonar.java.jdkHome>/java/jdk-17</sonar.java.jdkHome>
+  </properties>
+</project>
