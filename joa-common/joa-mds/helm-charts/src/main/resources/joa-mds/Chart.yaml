@@ -1,0 +1,5 @@
+apiVersion: v2
+name: joa-mds
+description: A Helm chart for JOA MDS
+version: ${helm.chart.version}
+appVersion: ${app.version}

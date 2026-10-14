@@ -1,0 +1,55 @@
+# Default values for joa-mds.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  name: joa-mds
+  externalKeys:
+    secretName: "core-secrets-keys"
+
+replicaCount: 1
+
+persistence:
+  enabled: true
+
+image:
+  # docker pull registry/repository:tag
+  registry: ${artifactory.url}
+  repository: joa-mds
+  pullPolicy: IfNotPresent
+  tag: ${joa-mds.version}
+
+env:
+  AMS_USE_CONFIGURED_CREDENTIALS: false
+
+startupProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 20
+  timeoutSeconds: 3
+  httpGet:
+    path: /actuator/health
+    port: 8080
+
+livenessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 15
+  periodSeconds: 60
+  successThreshold: 1
+  timeoutSeconds: 3
+  httpGet:
+    path: /actuator/health
+    port: 8080
+
+service:
+  nameOverride: joa-mds
+  type: ClusterIP
+  protocol: TCP
+  port: 8080
+  targetPort: 8080
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

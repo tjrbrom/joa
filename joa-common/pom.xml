@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<artifactId>joa-common</artifactId>
+	<packaging>pom</packaging>
+	<scm>
+		<connection>scm:git:gerrit.app.y.com:29418/HHQS/parent-poms</connection>
+	</scm>
+	
+	<name>${project.artifactId}</name>
+	<description>JOA Common</description>
+
+	<parent>
+		<groupId>com.x.hhqs.joa</groupId>
+		<artifactId>joa-parent-pom</artifactId>
+		<version>${revision}</version>
+		<relativePath>../joa-parent-pom/pom.xml</relativePath>
+	</parent>
+
+	<modules>
+		<module>joa-ac-restclient</module>
+		<module>joa-mds</module>
+		<module>joa-rmuid</module>
+	</modules>
+	
+</project>

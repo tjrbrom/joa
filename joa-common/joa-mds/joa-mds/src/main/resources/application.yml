@@ -1,0 +1,33 @@
+server.port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+spring:
+  application:
+    name: joa-mds
+  autoconfigure:
+    exclude: com.x.hhqs.joa.common.restclient.RestClientConfiguration
+  cloud:
+    nacos:
+      server-addr: joa-nacos:8848
+  config:
+    enabled: true
+    import:
+    - nacos:joa-common.properties?refresh=true
+    - nacos:joa-mds.properties?refresh=true
+    
+joa.mds:
+  sync-task:
+    interval-minutes: 60
+    manager-types:
+    - AMS
+    - NAV
+    intent-types:
+    - device-mf
+
+secretkey:
+  path: file:/joa/mds/secret/keyfile.plain
