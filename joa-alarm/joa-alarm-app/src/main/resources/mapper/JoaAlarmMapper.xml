@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x.hhqs.joa.alarm.mapper.JoaAlarmMapper">
+
+    <select id="findMaxIdByChannelIndices" resultType="long">
+        SELECT MAX(id) AS max_id
+        FROM joa_alarm
+        WHERE channel_index IN
+        <foreach collection="channelIndices" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY channel_index
+    </select>
+
+    <select id="findAlarmsByIds" resultType="com.x.hhqs.joa.alarm.entity.JoaAlarm">
+        SELECT *
+        FROM joa_alarm
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

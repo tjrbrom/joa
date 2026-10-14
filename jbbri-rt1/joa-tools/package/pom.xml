@@ -16,7 +16,7 @@
   </parent>
 
   <properties>
-    <!-- Nokia/FNMS Dependencies -->
+    <!-- X/hhqs Dependencies -->
     <hhqs.container.version>${revision}</hhqs.container.version>
     <hhqs.specificBuild>${project.version}</hhqs.specificBuild>
     <!-- application properties -->

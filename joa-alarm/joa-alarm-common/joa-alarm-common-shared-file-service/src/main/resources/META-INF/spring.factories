@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.x.hhqs.joa.common.sharedfileservice.config.WebdavFileServiceConfiguration

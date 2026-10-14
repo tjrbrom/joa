@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: joa-alarm-config
+data:
+  SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR: "joa-nacos-cs"
+  CORE_REST_BASEURL: "http://x-core-ac:8181"
+  CORE_REST_USERNAME: "adminuser"
+  CORE_REST_PASSWORD: "password"
+  CORE_WEBDAV_URL: "http://core-webdav:8080"
+  CORE_WEBDAV_USERNAME: "admin"
+  CORE_WEBDAV_PASSWORD: "xhhqs@123"
+  JOA_ALARM_SERVER_PORT: "31232"
+  JOA_ALARM_SERVER_CHANNEL_NUMBER: "1"
+  JOA_ALARM_KEYCLOAK_CREDENTIALS_SECRET: "a9428765-ddc4-485c-8bf1-897f39264eb2"
+  JOA_ALARM_KEYCLOAK_AUTH_SERVER_URL: "http://core-sso-headless:8443"
+  JOA_ALARM_DATASOURCE_URL: "jdbc:mariadb://core-mariadb:3306"
+  JOA_ALARM_DATASOURCE_USERNAME: "joa"
+  JOA_ALARM_DATASOURCE_PASSWORD: "joa@123"

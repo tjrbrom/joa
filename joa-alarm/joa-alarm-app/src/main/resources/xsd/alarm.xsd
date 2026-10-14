@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xsd:schema [
+        <!ELEMENT xsd:schema (xsd:element|xsd:complexType|xsd:simpleType)*>
+        <!ATTLIST xsd:schema
+                xmlns:xsd CDATA #REQUIRED>
+        <!ELEMENT xsd:element (xsd:complexType)*>
+        <!ATTLIST xsd:element
+                maxOccurs CDATA #IMPLIED
+                minOccurs CDATA #IMPLIED
+                name CDATA #REQUIRED
+                type CDATA #IMPLIED>
+        <!ELEMENT xsd:complexType (xsd:sequence|xsd:attribute)*>
+        <!ATTLIST xsd:complexType
+                name CDATA #IMPLIED>
+        <!ELEMENT xsd:sequence (xsd:element)*>
+        <!ELEMENT xsd:attribute (#PCDATA)>
+        <!ATTLIST xsd:attribute
+                name CDATA #REQUIRED
+                type CDATA #REQUIRED
+                use CDATA #REQUIRED>
+        <!ELEMENT xsd:simpleType (xsd:restriction)*>
+        <!ATTLIST xsd:simpleType
+                name CDATA #REQUIRED>
+        <!ELEMENT xsd:restriction (xsd:maxLength|xsd:enumeration)*>
+        <!ATTLIST xsd:restriction
+                base CDATA #REQUIRED>
+        <!ELEMENT xsd:maxLength (#PCDATA)>
+        <!ATTLIST xsd:maxLength
+                value CDATA #REQUIRED>
+        <!ELEMENT xsd:enumeration (#PCDATA)>
+        <!ATTLIST xsd:enumeration
+                value CDATA #REQUIRED>
+        ]>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xsd:element name="domain">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="alarms" type="alarmList" minOccurs="1" maxOccurs="1"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="alarmList">
+        <xsd:sequence>
+            <xsd:element name="family_supported" type="supportList" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="alarmtype" type="alarmTypeList" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="alarmTypeList">
+        <xsd:sequence>
+            <xsd:element name="namespace" type="xsd:anyURI" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="alarm" type="alarmType" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:decimal" use="optional" />
+        <xsd:attribute name="domain" type="xsd:string" use="required" />
+    </xsd:complexType>
+
+    <xsd:complexType name="supportList">
+        <xsd:sequence>
+            <xsd:element name="product" type="ProductList" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProductList">
+        <xsd:attribute name="family" type="xsd:string" use="required" />
+        <xsd:attribute name="support" type="xsd:string" use="optional" />
+    </xsd:complexType>
+
+    <xsd:complexType name="alarmType">
+        <xsd:sequence>
+            <xsd:element name="internal-alarm-number" type="xsd:decimal" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="alarm-type-id" type="AlarmTypeString" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="objects-supported" type="ObjectSupportList" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="severity" type="SeverityTypeWithAttribute" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="severityList" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="service-affecting" type="ServiceAffectingType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="description" type="LimitedString" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="advice-for-repair" type="LimitedString" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="additional-info" type="xsd:string" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ObjectSupportList">
+        <xsd:sequence>
+            <xsd:element name="object" type="ObjectList" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ObjectList">
+        <xsd:sequence>
+            <xsd:element name="object-namespace" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="object-type-class" type="xsd:string" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="object-type" type="xsd:string" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="AlarmTypeString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="50"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LimitedString">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="1024"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ServiceAffectingType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="yes"/>
+            <xsd:enumeration value="no"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="SeverityType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="critical"/>
+            <xsd:enumeration value="major"/>
+            <xsd:enumeration value="minor"/>
+            <xsd:enumeration value="warning"/>
+            <xsd:enumeration value="indeterminate"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+<!--    &lt;!&ndash; Define the complex type for severity &ndash;&gt;-->
+<!--    <xsd:complexType name="SeverityElementType">-->
+<!--        <xsd:simpleContent>-->
+<!--            <xsd:extension base="SeverityType">-->
+<!--                <xsd:attribute name="defaultSeverity" type="xsd:boolean" use="optional"/>-->
+<!--            </xsd:extension>-->
+<!--        </xsd:simpleContent>-->
+<!--    </xsd:complexType>-->
+
+    <!-- Define the complex type for severityList -->
+    <xsd:complexType name="SeverityListType">
+        <xsd:sequence>
+            <xsd:element name="severity" type="SeverityTypeWithAttribute" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Define the element for severityList -->
+    <xsd:element name="severityList" type="SeverityListType"/>
+
+    <!-- Define a new type for severity with attribute -->
+    <xsd:complexType name="SeverityTypeWithAttribute">
+        <xsd:simpleContent>
+            <xsd:extension base="SeverityType">
+                <xsd:attribute name="defaultSeverity" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:element name="severity" type="SeverityTypeWithAttribute"/>
+</xsd:schema>

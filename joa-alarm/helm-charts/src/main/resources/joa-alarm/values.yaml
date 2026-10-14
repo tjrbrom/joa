@@ -1,0 +1,111 @@
+# Default values for joa-alarm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  name: joa-alarm
+  #CORE_FLUENTD_SERVICE_HOST:
+  #CORE_FLUENTD_SERVICE_PORT:
+  init:
+    image:
+      name: hhqs-init-container
+      tag: ${hhqs-init-container.version}
+      pullPolicy: IfNotPresent
+  registry: ${artifactory.url}
+
+certificates:
+  core_keystore_secrets: "core-keystore-secrets"
+  core_keystore_password: "keystore-password"
+  fileNames:
+    kafka_client_key_pem: "kafka-server-key.pem"
+    kafka_client_key_pass: "kafka-server-key.pass"
+    kafka_client_cert: "kafka-server-cert.pem"
+    kafka_client_trustchain_cert: "kafka-server-trustchain-cert.pem"
+    kafka_client_trustchain_jks: "trustchain.jks"
+    kafka_client_keystore_jks: "server.jks"
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+
+replicaCount: 1
+
+
+image:
+  # docker pull registry/repository:tag
+  registry: ${artifactory.url}
+  repository: joa-alarm
+  pullPolicy: IfNotPresent
+  tag: ${joa-alarm.version}
+
+env:
+  name: joa-alarm
+  SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR: "joa-nacos-cs"
+  CORE_REST_BASEURL: "http://x-core-ac:8181"
+  CORE_REST_USERNAME: "adminuser"
+  CORE_REST_PASSWORD: "password"
+  CORE_WEBDAV_URL: "http://core-webdav:8080"
+  CORE_WEBDAV_USERNAME: "admin"
+  CORE_WEBDAV_PASSWORD: "xhhqs@123"
+#    CORE_WEBDAV_INSTANCE_PREFIX: ""
+  CORE_WEBDAV_INSTANCE_NAME: "x-core-av"
+  CORE_OPENSEARCH_URL: "https://core-indexsearch:9200"
+  CORE_OPENSEARCH_USERNAME: "coreesadmin"
+  CORE_OPENSEARCH_PASSWORD: "xhhqs@123"
+  CORE_KAFKA_BOOTSTRAP_SERVERS: "core-kafka-headless:9092"
+#    CORE_KAFKA_LISTENER_POLL_TIMEOUT: "3000"
+#    CORE_KAFKA_LISTENER_CONCURRENCY: "1"
+  CORE_KAFKA_CONSUMER_AUTO_OFFSET_RESET: "latest"
+  JOA_ALARM_SERVER_PORT: "31232"
+  JOA_ALARM_SERVER_CHANNEL_NUMBER: "1"
+  JOA_ALARM_KEYCLOAK_CREDENTIALS_SECRET: "a9428765-ddc4-485c-8bf1-897f39264eb2"
+  JOA_ALARM_KEYCLOAK_AUTH_SERVER_URL: "https://core-sso-headless:8443/core-sso"
+  JOA_ALARM_DATASOURCE_URL: "jdbc:mariadb://core-mariadb:3306"
+  JOA_ALARM_DATASOURCE_USERNAME: "joa"
+  JOA_ALARM_DATASOURCE_PASSWORD: "joa@123"
+#    JOA_ALARM_SFTP_PATH: "/export/alarm"
+#    JOA_ALARM_SFTP_IP: "10.99.88.61"
+#    JOA_ALARM_SFTP_PORT: "22"
+#    JOA_ALARM_SFTP_USER: "amssys"
+#    JOA_ALARM_SFTP_PASSWORD: "amssys"
+#    JOA_ALARM_SFTP_FILE_DELETE: "false"
+#    JOA_ALARM_SFTP_FILE_AUTO_DELETE_STRATEGY_KEEP: "3 days"
+  JOA_ALARM_XALARM2JOAALARM_ALLOWED_ORIGINS: "x-core-ac_ALARM,x-core-av_ALARM"
+  JOA_ALARM_XALARM2JOAALARM_TOPIC: "x-core-alarm"
+  JOA_ALARM_CORE_INTERNAL_INV_TOPIC: "CORE_INTERNAL_INVENTORY_COLLECTION_MODELS"
+
+
+service:
+  type: ClusterIP
+  ports:
+    - name: joa-alarm-port
+      protocol: TCP
+      port: 28180
+      targetPort: 28180
+#      nodePort: 31180
+
+startupProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 20
+  timeoutSeconds: 3
+  httpGet:
+    port: 28180
+
+livenessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 15
+  periodSeconds: 60
+  successThreshold: 1
+  timeoutSeconds: 3
+  httpGet:
+    port: 28180
+
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

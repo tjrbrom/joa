@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>joa-alarm</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>JOA Alarm</name>
+    <description>JOA Alarm</description>
+
+    <scm>
+        <connection>scm:git:gerrit.app.y.com:29418/hhqs/parent-poms</connection>
+    </scm>
+
+    <parent>
+        <groupId>com.x.hhqs.joa</groupId>
+        <artifactId>joa-parent-pom</artifactId>
+        <version>${revision}</version>
+        <relativePath>../joa-parent-pom/pom.xml</relativePath>
+    </parent>
+
+    <modules>
+        <module>joa-alarm-common</module>
+        <module>joa-alarm-app</module>
+        <module>package</module>
+        <module>helm-charts</module>
+    </modules>
+
+    <properties>
+        <!-- for pipeline limitation -->
+        <hhqs.joa-common.version>${revision}</hhqs.joa-common.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal Dependencies -->
+            <dependency>
+                <groupId>com.x.hhqs.joa</groupId>
+                <artifactId>joa-alarm-common-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.x.hhqs.joa</groupId>
+                <artifactId>joa-alarm-common-shared-file-service</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.x.hhqs.joa</groupId>
+                <artifactId>joa-ac-restclient</artifactId>
+                <version>${hhqs.joa-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.x.hhqs.joa</groupId>
+                <artifactId>joa-rmuid</artifactId>
+                <version>${hhqs.joa-common.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

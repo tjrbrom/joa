@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.x.hhqs.joa</groupId>
+        <artifactId>joa-alarm</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+        <!--<relativePath/>  lookup parent from repository -->
+    </parent>
+
+    <artifactId>joa-alarm-helm-charts</artifactId>
+    <name>JOA Alarm Individual Helm Chart</name>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <module.owner>jacky</module.owner>
+        <helm.artifactory.username>""</helm.artifactory.username>
+        <helm.artifactory.password>""</helm.artifactory.password>
+        <helm.chart.version>${project.version}</helm.chart.version>
+        <app.version>${project.version}</app.version>
+        <joa-alarm.version>${project.version}</joa-alarm.version>
+        <excludeSonar>true</excludeSonar>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/target/generated-resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

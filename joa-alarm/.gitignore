@@ -1,0 +1,7 @@
+**/.flattened-pom.xml
+
+*.iml
+*.log
+
+target/
+/package/Dockerfile

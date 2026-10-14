@@ -1,0 +1,67 @@
+{
+    "global": {
+        "maven": "-Dhhqs.joa-parent-pom.version=${joa-parent-pom} -Dhhqs.joa-common.version=${joa-common}",
+        "docker": "",
+        "env": {}
+    },
+    "build": {
+        "maven": {
+            "joa-alarm": "-Dhelm.chart.version=${helm_tag} -Dprofile -Drevision=${build_tag}"
+        },
+        "docker": {
+            "joa-alarm": "package --build-arg artifactory_host=${artifactory_host} -t joa-alarm:${build_tag}"
+        }
+    },
+    "ut": {
+        "maven": {
+            "joa-alarm": "-Dsurefire.reportNameSuffix=joa-alarm -Drevision=${build_tag}"
+        }
+    },
+    "sonar": {},
+    "deploy": {
+        "maven": {
+            "module": [],
+            "files": []
+        },
+        "maven_internal": {
+            "module": [],
+            "files": []
+        },
+        "docker_internal": {
+            "module": []
+        },
+        "helm": {
+            "module": [],
+            "files": [
+                {
+                    "source_path": "helm-charts/target/*.tgz",
+                    "target_path": "Core-JOA-ALARM"
+                }
+            ]
+        },
+        "docker": {
+            "module": [
+                "joa-alarm"
+            ]
+        }
+    },
+    "lint": {
+        "docker": {
+            "joa-alarm": {
+                "file_path": "package/Dockerfile",
+                "rpm": {
+                    "path": [],
+                    "ignore_package": []
+                },
+                "python": {
+                    "path": [],
+                    "ignore_package": []
+                }
+            }
+        }
+    },
+    "foss": {
+        "ignore_repo": false,
+        "ignore_module_path": []
+    }
+}

@@ -1,0 +1,23 @@
+core:
+  webdav:
+    username: admin
+    password:
+    url: https://localhost:5443
+    instance-prefix:
+    instance-name: x-core-av
+    shared-file-server-external-url:
+    k8s-public-ip:
+    staging-area: /tmp
+    system-properties:
+      - name: WEBDAV_CONNECT_TIMEOUT_MS
+        value: 15000
+      - name: WEBDAV_SOCKET_READ_TIMEOUT_MS
+        value: 60000
+      - name: WEBDAV_RESOURCE_LOCK_TIMEOUT
+        value: 90
+      - name: CSV_BUFFER_SIZE
+        value: 52428800
+      - name: VENDOR_SPECIFIC_SW_FILE_NAME_PATTERN
+        value: ^(PRE|CFG|XML|GFT|CFP)[a-zA-Z]{4}[0-9]{3}$
+      - name: CORE_STAGING_AREA
+        value: ${core.webdav.staging-area}

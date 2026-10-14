@@ -1,0 +1,253 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "joa-alarm.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "joa-alarm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "joa-alarm.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: joa-alarm-kafka-ssl-init-container
+          image: {{ .Values.global.registry }}/{{ .Values.global.init.image.name }}:{{ .Values.global.init.image.tag }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              /opt/init-container/pem-to-keystore.sh $kafka_keyfile $kafka_keyfilepass $kafka_certfile $kafka_keystore_jks_pass $kafka_keystore_jks $kafka_truststore $kafka_truststore_jks_pass $kafka_truststore_jks
+              /opt/init-container/pem-to-keystore.sh $kafka_truststore $kafka_truststore_jks_pass $kafka_keystore_jks
+              mv /etc/kafka/secrets/ssl/server.jks /etc/kafka/secrets/ssl/keyStore
+              mv /etc/kafka/secrets/ssl/trustchain.jks /etc/kafka/secrets/ssl/trustStore
+          env:
+            - name: kafka_keystore_jks_pass
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.certificates.core_keystore_secrets }}
+                  key: {{ .Values.certificates.core_keystore_password }}
+            - name: kafka_keyfile
+              value: /etc/core/certificates/secrets/{{ .Values.certificates.fileNames.kafka_client_key_pem }}
+            - name: kafka_keyfilepass
+              value: /etc/core/certificates/secrets/{{ .Values.certificates.fileNames.kafka_client_key_pass }}
+            - name: kafka_certfile
+              value: /etc/core/certificates/secrets/{{ .Values.certificates.fileNames.kafka_client_cert }}
+            - name: kafka_keystore_jks
+              value: /etc/kafka/secrets/ssl/{{ .Values.certificates.fileNames.kafka_client_keystore_jks }}
+            - name: kafka_truststore
+              value: /etc/core/certificates/secrets/{{ .Values.certificates.fileNames.kafka_client_trustchain_cert }}
+            - name: kafka_truststore_jks
+              value: /etc/kafka/secrets/ssl/{{ .Values.certificates.fileNames.kafka_client_trustchain_jks }}
+            - name: kafka_truststore_jks_pass
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.certificates.core_keystore_secrets }}
+                  key: {{ .Values.certificates.core_keystore_password }}
+          volumeMounts:
+            - mountPath: /etc/kafka/secrets/ssl/
+              name: keystore-volume
+            - mountPath: /etc/core/certificates/secrets/
+              name: core-kafka-certs
+      containers:
+      - name: {{ include "joa-alarm.fullname" . }}
+        image: "{{ tpl .Values.image.registry . }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          {{- if .Values.global.CORE_FLUENTD_SERVICE_HOST }}
+          - name: CORE_FLUENTD_SERVICE_HOST
+            value: {{ .Values.global.CORE_FLUENTD_SERVICE_HOST | quote }}
+          {{- end }}
+          {{- if .Values.global.CORE_FLUENTD_SERVICE_PORT }}
+          - name: CORE_FLUENTD_SERVICE_PORT
+            value: {{ .Values.global.CORE_FLUENTD_SERVICE_PORT | quote }}
+          {{- end }}
+          - name: KAFKA_KEYSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.certificates.core_keystore_secrets }}
+                key: {{ .Values.certificates.core_keystore_password }}
+          - name: KAFKA_KEY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.certificates.core_keystore_secrets }}
+                key: {{ .Values.certificates.core_keystore_password }}
+          - name: KAFKA_TRUSTSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.certificates.core_keystore_secrets }}
+                key: {{ .Values.certificates.core_keystore_password }}
+
+          {{- if .Values.env.SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR }}
+          - name: SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR
+            value: {{ tpl .Values.env.SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_REST_BASEURL }}
+          - name: CORE_REST_BASEURL
+            value: {{ tpl .Values.env.CORE_REST_BASEURL . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_REST_USERNAME }}
+          - name: CORE_REST_USERNAME
+            value: {{ tpl .Values.env.CORE_REST_USERNAME . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_REST_PASSWORD }}
+          - name: CORE_REST_PASSWORD
+            value: {{ tpl .Values.env.CORE_REST_PASSWORD . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_WEBDAV_URL }}
+          - name: CORE_WEBDAV_URL
+            value: {{ tpl .Values.env.CORE_WEBDAV_URL . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_WEBDAV_USERNAME }}
+          - name: CORE_WEBDAV_USERNAME
+            value: {{ tpl .Values.env.CORE_WEBDAV_USERNAME . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_WEBDAV_PASSWORD }}
+          - name: CORE_WEBDAV_PASSWORD
+            value: {{ tpl .Values.env.CORE_WEBDAV_PASSWORD . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_WEBDAV_INSTANCE_PREFIX }}
+          - name: CORE_WEBDAV_INSTANCE_PREFIX
+            value: {{ tpl .Values.env.CORE_WEBDAV_INSTANCE_PREFIX . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_WEBDAV_INSTANCE_NAME }}
+          - name: CORE_WEBDAV_INSTANCE_NAME
+            value: {{ tpl .Values.env.CORE_WEBDAV_INSTANCE_NAME . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_OPENSEARCH_URL }}
+          - name: CORE_OPENSEARCH_URL
+            value: {{ tpl .Values.env.CORE_OPENSEARCH_URL . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_OPENSEARCH_USERNAME }}
+          - name: CORE_OPENSEARCH_USERNAME
+            value: {{ tpl .Values.env.CORE_OPENSEARCH_USERNAME . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_OPENSEARCH_PASSWORD }}
+          - name: CORE_OPENSEARCH_PASSWORD
+            value: {{ tpl .Values.env.CORE_OPENSEARCH_PASSWORD . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_KAFKA_BOOTSTRAP_SERVERS }}
+          - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+            value: {{ tpl .Values.env.CORE_KAFKA_BOOTSTRAP_SERVERS . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_KAFKA_LISTENER_POLL_TIMEOUT }}
+          - name: SPRING_KAFKA_LISTENER_POLL_TIMEOUT
+            value: {{ tpl .Values.env.CORE_KAFKA_LISTENER_POLL_TIMEOUT . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_KAFKA_LISTENER_CONCURRENCY }}
+          - name: SPRING_KAFKA_LISTENER_CONCURRENCY
+            value: {{ tpl .Values.env.CORE_KAFKA_LISTENER_CONCURRENCY . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.CORE_KAFKA_CONSUMER_AUTO_OFFSET_RESET }}
+          - name: SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET
+            value: {{ tpl .Values.env.CORE_KAFKA_CONSUMER_AUTO_OFFSET_RESET . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_SERVER_PORT }}
+          - name: JOA_ALARM_SERVER_PORT
+            value: {{ tpl .Values.env.JOA_ALARM_SERVER_PORT . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_SERVER_CHANNEL_NUMBER }}
+          - name: JOA_ALARM_SERVER_CHANNEL_NUMBER
+            value: {{ tpl .Values.env.JOA_ALARM_SERVER_CHANNEL_NUMBER . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_KEYCLOAK_CREDENTIALS_SECRET }}
+          - name: JOA_ALARM_KEYCLOAK_CREDENTIALS_SECRET
+            value: {{ tpl .Values.env.JOA_ALARM_KEYCLOAK_CREDENTIALS_SECRET . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_KEYCLOAK_AUTH_SERVER_URL }}
+          - name: JOA_ALARM_KEYCLOAK_AUTH_SERVER_URL
+            value: {{ tpl .Values.env.JOA_ALARM_KEYCLOAK_AUTH_SERVER_URL . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_DATASOURCE_URL }}
+          - name: JOA_ALARM_DATASOURCE_URL
+            value: {{ tpl .Values.env.JOA_ALARM_DATASOURCE_URL . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_DATASOURCE_USERNAME }}
+          - name: JOA_ALARM_DATASOURCE_USERNAME
+            value: {{ tpl .Values.env.JOA_ALARM_DATASOURCE_USERNAME . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_DATASOURCE_PASSWORD }}
+          - name: JOA_ALARM_DATASOURCE_PASSWORD
+            value: {{ tpl .Values.env.JOA_ALARM_DATASOURCE_PASSWORD . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_XALARM2JOAALARM_ALLOWED_ORIGINS }}
+          - name: JOA_ALARM_XALARM2JOAALARM_ALLOWED_ORIGINS
+            value: {{ tpl .Values.env.JOA_ALARM_XALARM2JOAALARM_ALLOWED_ORIGINS . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_XALARM2JOAALARM_TOPIC }}
+          - name: JOA_ALARM_XALARM2JOAALARM_TOPIC
+            value: {{ tpl .Values.env.JOA_ALARM_XALARM2JOAALARM_TOPIC . | quote }}
+          {{- end }}
+
+          {{- if .Values.env.JOA_ALARM_CORE_INTERNAL_INV_TOPIC }}
+          - name: JOA_ALARM_CORE_INTERNAL_INV_TOPIC
+            value: {{ tpl .Values.env.JOA_ALARM_CORE_INTERNAL_INV_TOPIC . | quote }}
+          {{- end }}
+        volumeMounts:
+          - name: keystore-volume
+            mountPath: /joa/kafka/keystore
+          - name: logs-volume
+            mountPath: /joa/logs
+        startupProbe:
+          initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+          failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          httpGet:
+            path: /actuator/health
+            port: {{ .Values.startupProbe.httpGet.port }}
+        livenessProbe:
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          httpGet:
+            scheme: HTTP
+            path: /actuator/health
+            port: {{ .Values.livenessProbe.httpGet.port }}
+      volumes:
+        - emptyDir: { }
+          name: keystore-volume
+        - name: core-kafka-certs
+          secret:
+            defaultMode: 420
+            secretName: core-kafka-certificate-secrets
+        - name: core-keystore-password
+          secret:
+            defaultMode: 420
+            secretName: core-keystore-secrets
+        - name: logs-volume
+          hostPath:
+            path: /joa/joa-alarm/logs
+            type: DirectoryOrCreate

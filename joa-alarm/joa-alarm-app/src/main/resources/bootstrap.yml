@@ -1,0 +1,24 @@
+# Tomcat
+server:
+  port: 28180
+  max-http-header-size: 100000
+
+# Spring
+spring:
+  application:
+    name: joa-alarm
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        enabled: true
+        server-addr: ${nacos.host:10.131.150.204}:${nacos.port:8849}
+        file-extension: yml
+        shared-configs:
+          - data-id: application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+            refresh: true
+  config:
+    import:
+      - nacos:joa-alarm.properties?refresh=true
+      - nacos:joa-common.properties?refresh=true

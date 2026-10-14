@@ -1,0 +1,1 @@
+ALTER TABLE `joa_alarm` ADD INDEX `idx_alarm_id` (`alarm_id`);

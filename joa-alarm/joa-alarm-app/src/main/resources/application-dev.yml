@@ -1,0 +1,179 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+spring:
+  servlet.multipart.enabled: true
+  servlet.multipart.max-file-size: 5MB
+  servlet.multipart.max-request-size: 10MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          url: ${joa-alarm.datasource.url}/${joa-alarm.datasource.schema}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=CONVERT_TO_NULL&serverTimezone=Asia/Shanghai&allowMultiQueries=true&failOverReadOnly=false&autoReconnect=true
+          username: ${joa-alarm.datasource.username}
+          password: ${joa-alarm.datasource.password}
+          driver-class-name: org.mariadb.jdbc.Driver
+  flyway:
+    # Manually migrate db with flyway bean
+    enabled: false
+    locations: classpath:db/migration/
+    url: ${joa-alarm.datasource.url}
+    user: ${joa-alarm.datasource.username}
+    password: ${joa-alarm.datasource.password}
+    table: joa_alarm_schema_history
+    placeholders:
+      joa-alarm-schema: ${joa-alarm.datasource.schema}
+    schemas:
+      - ${joa-alarm.datasource.schema}
+    baselineOnMigrate: true
+    baselineVersion: 0
+  kafka:
+    bootstrap-servers: 10.182.100.163:9093
+    security:
+      protocol: ssl
+    ssl:
+      key-store-location: file:/joa/kafka/keystore/keyStore
+      key-store-password: ${KAFKA_KEYSTORE_PASSWORD}
+      key-password: ${KAFKA_KEY_PASSWORD}
+      trust-store-location: file:/joa/kafka/keystore/trustStore
+      trust-store-password: ${KAFKA_TRUSTSTORE_PASSWORD}
+      key-store-type: JKS
+    consumer:
+      group-id: joa-alarm
+      enable-auto-commit: false
+      max-poll-records: 500
+      auto-offset-reset: latest
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      poll-timeout: 3000
+      concurrency: 1
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#  cache:
+#    cache-names:
+#      - getDeviceIp
+#      - getOnuId
+#      - retrieveXJsonAlarmInfo
+#      - queryDeviceInfo
+#      - querySlotPlannedType
+#      - retrieveCoreSiteName
+#    caffeine:
+#      spec: maximumSize=${joa-alarm.xalarm2joaalarm.cache.max-size},expireAfterWrite=${joa-alarm.xalarm2joaalarm.cache.expire-minutes}m
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.x.hhqs.joa.alarm.entity
+  type-enums-package: com.x.hhqs.joa.alarm.entity
+  mapper-locations: classpath:mapper/*.xml
+
+logging:
+  level:
+    org.opendaylight.yangtools: ERROR
+#    com.zaxxer.hikari: DEBUG
+#    org.flywaydb: DEBUG
+#    org.springframework: WARN
+#  pattern:
+#    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n"
+
+core:
+  rest:
+    baseUrl: https://10.182.100.163/x-core-ac
+    username: adminuser
+    password: password
+    current-user-url: /rest/auth/currentUser
+  webdav:
+    url: https://10.182.100.163/core-webdav
+    username: admin
+    password: xhhqs@123
+  opensearch:
+    url: https://10.182.100.163/core-indexsearch
+    username: coreesadmin
+    password: xhhqs@123
+
+joa-alarm:
+  xalarm2joaalarm:
+    category-mapping:
+      equipment-alarm: EquipmentAlarm
+      communications-alarm: CommunicationAlarm
+      processing-error-alarm: ProcessingFailure
+      quality-of-service-alarm: QualityOfServiceAlarm
+      environmental-alarm: EnvironmentalAlarm
+      bfdAlarm: ProcessingFailure
+      dhcpAlarm: EquipmentAlarm
+      eqptAlarm: EquipmentAlarm
+      ethcfmAlarm: EquipmentAlarm
+      ipAlarm: EquipmentAlarm
+      isisAlarm: ProcessingFailure
+      lagAlarm: EquipmentAlarm
+      ldpAlarm: ProcessingFailure
+      mplsAlarm: ProcessingFailure
+      onu-alarm: EquipmentAlarm
+      ospfAlarm: ProcessingFailure
+      portAlarm: EquipmentAlarm
+      rpf-base-alarm: ProcessingFailure
+      rsvpAlarm: ProcessingFailure
+      securityAlarm: ProcessingFailure
+      serviceAlarm: QualityOfServiceAlarm
+      stpAlarm: EquipmentAlarm
+      systemAlarm: ProcessingFailure
+      vrtrAlarm: EquipmentAlarm
+    cache:
+      max-size: 500
+      expire-minutes: 5
+    allowed-origins: x-core-av_ALARM,x-core-ac_ALARM
+    topic: x-core-alarm
+  core-internal-inv-topic: CORE_INTERNAL_INVENTORY_COLLECTION_MODELS
+  datasource:
+    url: jdbc:mariadb://10.182.100.163:3306
+    username: joa
+    password: joa@123
+    schema: joa_alarm
+  server:
+    port: 31232 # Service port, default=31232
+    channel-number: 1
+  client-idle-timeout: 3 # OSS connection idle time, unit: minutes, default=3
+  charset: UTF-8 # encode and decode charset, default=UTF-8
+  role: CORE_ALARMS_INTERFACE_PERMISSION
+  max-connect: 1
+  # max alarm file size when reqSyncAlarmFile, unit:MB, default=100
+  max-alarm-file-size: 100
+  file-size-100m: false
+  version: V3.3.0
+  keycloak:
+    auth-server-url: https://10.182.100.163/core-sso
+    realm: master
+    token: /realms/${joa-alarm.keycloak.realm}/protocol/openid-connect/token
+    resource: CORE
+    credentials:
+      secret: a9428765-ddc4-485c-8bf1-897f39264eb2
+  sftp:
+    path: /export/alarm
+    ip: 10.99.88.61
+    port: 22
+    user: amssys
+    password: amssys
+    file-delete: true
+    file-auto-delete-strategy:
+      keep: 3 days
+    type: sftp
+  database-keep-days: 7
+  alarm-log:
+    oas-alarm-max-history: 30
+    alarm-data-max-history: 7
+  ams-server-is-start: true
+  ams-timeout: 1800 #Unit second

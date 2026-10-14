@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-joa-alarm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joa-alarm
+  template:
+    metadata:
+      labels:
+        app: joa-alarm
+    spec:
+      containers:
+      - name: local-joa-alarm
+        image: joa-alarm
+        imagePullPolicy: IfNotPresent
+#        env:
+        envFrom:
+          - configMapRef:
+              name: joa-alarm-config
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 28180
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 20
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 28180
+          initialDelaySeconds: 15
+          periodSeconds: 60
+          failureThreshold: 3
+          timeoutSeconds: 3
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /joa/logs
+      volumes:
+        - name: logs-volume
+          hostPath:
+            path: /joa/joa-alarm/logs
+            type: DirectoryOrCreate

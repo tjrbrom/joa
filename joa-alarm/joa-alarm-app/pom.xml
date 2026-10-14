@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.x.hhqs.joa</groupId>
+        <artifactId>joa-alarm</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>joa-alarm-app</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.parent.artifactId}/${project.artifactId}</name>
+    <description>JOA Alarm Application</description>
+
+    <properties>
+        <sonar.exclusions>
+            src/main/java/com/x/hhqs/joa/alarm/dto/AlarmSeverity.java
+            src/main/java/com/x/hhqs/joa/alarm/dto/AlarmStatus.java
+            src/main/java/com/x/hhqs/joa/alarm/dto/AlarmType.java
+            src/main/java/com/x/hhqs/joa/alarm/dto/XAlarmVO.java
+            src/main/java/com/x/hhqs/joa/alarm/dto/XCoreAlarmInfo.java
+            src/main/java/com/x/hhqs/joa/alarm/dto/RelateType.java
+            src/main/java/com/x/hhqs/joa/alarm/utils/DeviceNotification.java
+            src/main/java/com/x/hhqs/joa/alarm/utils/DeviceAlarmNotification.java
+            src/main/java/com/x/hhqs/joa/alarm/logger/**
+            src/main/java/com/x/hhqs/joa/alarm/utils/RestWebClient.java
+        </sonar.exclusions>
+        <sonar.coverage.exclusions>
+            **/src/main/java/com/x/hhqs/joa/alarm/dto/AlarmSeverity.java
+            **/src/main/java/com/x/hhqs/joa/alarm/dto/AlarmStatus.java
+            **/src/main/java/com/x/hhqs/joa/alarm/dto/AlarmType.java
+            **/src/main/java/com/x/hhqs/joa/alarm/dto/XAlarmVO.java
+            **/src/main/java/com/x/hhqs/joa/alarm/dto/XCoreAlarmInfo.java
+            **/src/main/java/com/x/hhqs/joa/alarm/dto/RelateType.java
+            **/src/main/java/com/x/hhqs/joa/alarm/utils/DeviceNotification.java
+            **/src/main/java/com/x/hhqs/joa/alarm/utils/DeviceAlarmNotification.java
+            **/src/main/java/com/x/hhqs/joa/alarm/logger/**
+            **/src/main/java/com/x/hhqs/joa/alarm/utils/RestWebClient.java
+        </sonar.coverage.exclusions>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+        <!-- SpringBoot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+        </dependency>
+<!--        &lt;!&ndash; Spring Cache &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-cache</artifactId>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; Caffeine &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.ben-manes.caffeine</groupId>-->
+<!--            <artifactId>caffeine</artifactId>-->
+<!--        </dependency>-->
+
+
+        <!-- Internal Dependencies -->
+        <dependency>
+            <groupId>com.x.hhqs.joa</groupId>
+            <artifactId>joa-alarm-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.x.hhqs.joa</groupId>
+            <artifactId>joa-alarm-common-shared-file-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.x.hhqs.joa</groupId>
+            <artifactId>joa-ac-restclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.x.hhqs.joa</groupId>
+            <artifactId>joa-rmuid</artifactId>
+        </dependency>
+
+        <!-- DB Connector -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${spring-boot.mybatis-plus}</version>
+        </dependency>
+
+        <!-- ODL Yang tools -->
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-parser-impl</artifactId>
+            <version>${opendaylight.yangtools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-model-api</artifactId>
+            <version>${opendaylight.yangtools.version}</version>
+        </dependency>
+
+        <!-- kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <!-- OpenSearch client -->
+        <dependency>
+            <groupId>org.opensearch.client</groupId>
+            <artifactId>opensearch-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opensearch.client</groupId>
+            <artifactId>opensearch-rest-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Commons tools -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>${xmlbeans4.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <!-- Test Scope -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>target/generated-resources</directory>
+                <excludes>
+                    <exclude>**/*-tests.jar</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.xmlbeans</groupId>
+                                    <artifactId>xmlbeans</artifactId>
+                                    <version>${xmlbeans4.version}</version>
+                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                    <destFileName>xmlbeans.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target name="init">
+                                <path id="xmlbeans.classpath">
+                                    <fileset dir="${project.build.directory}/lib" includes="xmlbeans.jar"/>
+                                </path>
+                                <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean"
+                                         classpathref="xmlbeans.classpath"/>
+                                <xmlbean
+                                        srcgendir="${project.build.directory}/generated-resources/xmlbeans"
+                                        classgendir="${project.build.directory}/generated-resources"
+                                        classpathref="xmlbeans.classpath" failonerror="true" quiet="false"
+                                        schema="src/main/resources/xsd/*.*">
+                                    <fileset dir="src/main/resources/xsd" includes="**/*.*"/>
+                                </xmlbean>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

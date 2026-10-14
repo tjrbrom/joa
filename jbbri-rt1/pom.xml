@@ -8,7 +8,7 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
     <scm>
-        <connection>scm:git:gerrit.app.y.com:29418/FNMS/parent-poms</connection>
+        <connection>scm:git:gerrit.app.y.com:29418/hhqs/parent-poms</connection>
     </scm>
 
     <name>${project.artifactId}</name>

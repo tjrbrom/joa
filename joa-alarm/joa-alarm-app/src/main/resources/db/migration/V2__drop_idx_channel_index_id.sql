@@ -1,0 +1,1 @@
+ALTER TABLE joa_alarm DROP INDEX idx_channel_index_id;
