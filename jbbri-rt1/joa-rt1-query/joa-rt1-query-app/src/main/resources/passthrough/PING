@@ -1,0 +1,25 @@
+<resultTemplate>
+    <minSleepTime>1000</minSleepTime>
+    <maxSleepTime>2000</maxSleepTime>
+    <title>Ping from ONU</title>
+    <paramNameList>
+        <paramName>TxPkts</paramName>
+        <paramName>RxPkts</paramName>
+        <paramName>LostPkts</paramName>
+        <paramName>LostPktRatio</paramName>
+        <paramName>MinDelay</paramName>
+        <paramName>MaxDelay</paramName>
+        <paramName>AvgDelay</paramName>
+     </paramNameList>
+    <resultList>
+        <result>
+            <paramValue>100</paramValue>
+            <paramValue>200</paramValue>
+            <paramValue>300</paramValue>
+            <paramValue>400</paramValue>
+            <paramValue>500</paramValue>
+            <paramValue>600</paramValue>
+            <paramValue>700</paramValue>
+        </result>
+    </resultList>
+</resultTemplate>

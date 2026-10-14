@@ -1,0 +1,5 @@
+apiVersion: v2
+name: joa-gateway
+description: A Helm chart for JOA Gateway
+version: ${helm.chart.version}
+appVersion: ${app.version}

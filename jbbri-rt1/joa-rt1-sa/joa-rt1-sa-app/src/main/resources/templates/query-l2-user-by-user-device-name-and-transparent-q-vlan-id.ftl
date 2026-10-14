@@ -1,0 +1,23 @@
+<rpc
+    xmlns='urn:ietf:params:xml:ns:netconf:base:1.0'>
+    <get-config>
+        <source>
+            <running/>
+        </source>
+        <filter type='subtree'>
+            <ibn
+                xmlns='http://www.x.com/management-solutions/ibn'>
+                <intent>
+                    <intent-specific-data
+                        xmlns="http://www.x.com/management-solutions/ibn">
+                        <l2-user
+                            xmlns="http://www.x.com/management-solutions/l2-user">
+                            <user-device-name>${userDeviceName}</user-device-name>
+                            <transparent-q-vlan-id>${transparentQVlanId}</transparent-q-vlan-id>
+                        </l2-user>
+                    </intent-specific-data>
+                </intent>
+            </ibn>
+        </filter>
+    </get-config>
+</rpc>

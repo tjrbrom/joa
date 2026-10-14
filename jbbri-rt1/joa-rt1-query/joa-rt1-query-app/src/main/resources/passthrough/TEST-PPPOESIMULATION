@@ -1,0 +1,17 @@
+<resultTemplate>
+    <minSleepTime>1000</minSleepTime>
+    <maxSleepTime>2000</maxSleepTime>
+    <title>result of pppoe simulation</title>
+    <paramNameList>
+        <paramName>State</paramName>
+        <paramName>Conclusion</paramName>
+        <paramName>FailReason</paramName>
+     </paramNameList>
+    <resultList>
+        <result>
+            <paramValue>Testend</paramValue>
+            <paramValue>Success</paramValue>
+            <paramValue>PADITimeout</paramValue>
+        </result>
+    </resultList>
+</resultTemplate>

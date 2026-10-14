@@ -1,0 +1,23 @@
+<resultTemplate>
+    <minSleepTime>1000</minSleepTime>
+    <maxSleepTime>2000</maxSleepTime>
+    <title>result of call out simulation</title>
+    <paramNameList>
+        <paramName>STATE</paramName>
+        <paramName>DIALNUMBER</paramName>
+        <paramName>TARGETNUMBER</paramName>
+        <paramName>FAILEDSIG</paramName>
+        <paramName>Conclusion</paramName>
+        <paramName>FailReason</paramName>
+     </paramNameList>
+    <resultList>
+        <result>
+            <paramValue>Testend</paramValue>
+            <paramValue>100</paramValue>
+            <paramValue>101</paramValue>
+            <paramValue>PADITimeout</paramValue>
+            <paramValue>1</paramValue>
+            <paramValue>PADITimeout</paramValue>
+        </result>
+    </resultList>
+</resultTemplate>

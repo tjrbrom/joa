@@ -1,0 +1,37 @@
+<oss-commands>
+  <oss-command name="LST-DEVICE">
+	<rpc file="customfield/QueryDeviceMf.ftl" type="multiple" targetName="deviceTarget">
+	  <attribute name="DEVNAME"	xPath="//ibn:intent[ibn:target='${deviceTarget}']/ibn:intent-specific-data/dmf:device-mf/dmf:ne-name" />
+	  <attribute name="TOPOLOC" xPath="//ibn:intent[ibn:target='${deviceTarget}']/ibn:intent-specific-data/dmf:device-mf/dmf:ne-location" />
+	  <attribute name="ALIAS" xPath="//ibn:intent[ibn:target='${deviceTarget}']/ibn:target" />
+	</rpc>
+	<ignore>
+	</ignore>
+  </oss-command>
+  <oss-command name="LST-ONU">
+	<rpc file="customfield/QueryOnt.ftl" type="multiple" targetName="ontTarget">
+	  <attribute name="NAME" xPath="//ibn:intent[ibn:target='${ontTarget}']/ibn:intent-specific-data/ont:ont/ont:ont-name" />
+	  <attribute name="IP" xPath="//ibn:intent[ibn:target='${ontTarget}']/ibn:intent-specific-data/ont:ont/ont:ont-ip" />
+	  <attribute name="FTTXMODE" xPath="//ibn:intent[ibn:target='${ontTarget}']/ibn:intent-specific-data/ont:ont/ont:fttx-mode" />
+	</rpc>
+	<ignore>
+	</ignore>
+  </oss-command>
+  <oss-command name="LST-ONUSTATE">
+	<rpc file="customfield/QueryOnt.ftl" type="multiple" targetName="ontTarget">
+	  <attribute name="ONUIP" xPath="//ibn:intent[ibn:target='${ontTarget}']/ibn:intent-specific-data/ont:ont/ont:ont-ip" />
+	</rpc>
+	<ignore>
+	</ignore>
+  </oss-command>
+  <oss-command name="LST-VLAN">
+	<rpc file="customfield/QueryL2Infra.ftl" type="multiple" targetName="l2InfraTarget">
+	  <attribute name="DESC" xPath="//ibn:intent[ibn:target='${l2InfraTarget}']/ibn:intent-specific-data/l2infra:l2-infra/l2infra:service-description" />
+	  <attribute name="MVLANFLAG" xPath="//ibn:intent[ibn:target='${l2InfraTarget}']/ibn:intent-specific-data/l2infra:l2-infra/l2infra:mvlan-flag" />
+	  <attribute name="MVLANPRI" xPath="//ibn:intent[ibn:target='${l2InfraTarget}']/ibn:intent-specific-data/l2infra:l2-infra/l2infra:mvlan-pri" />
+	  <attribute name="SERVICE" xPath="//ibn:intent[ibn:target='${l2InfraTarget}']/ibn:intent-specific-data/l2infra:l2-infra/l2infra:service-type" />
+	</rpc>
+	<ignore>
+	</ignore>
+  </oss-command>
+</oss-commands>

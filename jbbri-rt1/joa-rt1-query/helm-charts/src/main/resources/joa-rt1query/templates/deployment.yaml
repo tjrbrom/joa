@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "joa-rt1query.fullname" . }}
+  labels:
+    {{- include "joa-rt1query.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "joa-rt1query.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "joa-rt1query.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ include "joa-rt1query.fullname" . }}
+        image: "{{ tpl .Values.image.registry . }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          {{- if .Values.global.SPRING_CLOUD_NACOS_SERVER_ADDR }}
+          - name: SPRING_CLOUD_NACOS_SERVER_ADDR
+            value: {{ .Values.global.SPRING_CLOUD_NACOS_SERVER_ADDR | quote }}
+          {{- end }}
+          {{- if .Values.global.CORE_FLUENTD_SERVICE_HOST }}
+          - name: CORE_FLUENTD_SERVICE_HOST
+            value: {{ .Values.global.CORE_FLUENTD_SERVICE_HOST | quote }}
+          {{- end }}
+          {{- if .Values.global.CORE_FLUENTD_SERVICE_PORT }}
+          - name: CORE_FLUENTD_SERVICE_PORT
+            value: {{ .Values.global.CORE_FLUENTD_SERVICE_PORT | quote }}
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+        volumeMounts:
+        - mountPath: /joa/config
+          name: rt1query-volume
+      {{- end }}
+        startupProbe:
+          initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+          failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          httpGet:
+            path: /actuator/health
+            port: {{ .Values.startupProbe.httpGet.port }}
+        livenessProbe:
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          httpGet:
+            scheme: HTTP
+            path: /actuator/health
+            port: {{ .Values.livenessProbe.httpGet.port }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+      - name: rt1query-volume
+        hostPath:
+          path: /joa/rt1query/config
+          type: DirectoryOrCreate
+      {{- end }}

@@ -1,0 +1,21 @@
+<RT1Command name="LST-TOPOLINK">
+    <validation enabled="true">
+        <tid regexpr="^[A-Za-z0-9-_]+$" required="false" />
+        <aid>
+            <group>
+                <attribute name="OLTID" regexpr="^.{1,255}$" required="true" />
+                <attribute name="PONID" regexpr="^((NA|[1-9]|[1-9][0-9])-){2}([1-9]|[1-9][0-9])-([1-9]|[1-9][0-9])$" required="false" />
+            </group>
+        </aid>
+        <ctag regexpr="^[A-Za-z0-9-_]+$" required="false" />
+    </validation>
+
+    <parser id="COMMON.parser"/>
+
+    <handlers>
+        <handler id="LST-TOPOLINK"/>
+    </handlers>
+
+    <outputMsgBuilder id="COMMON.outputMsgBuilder"/>
+
+</RT1Command>

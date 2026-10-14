@@ -1,0 +1,5 @@
+apiVersion: v2
+name: joa-rt1query
+description: A Helm chart for JOA RT1 Query
+version: ${helm.chart.version}
+appVersion: ${app.version}

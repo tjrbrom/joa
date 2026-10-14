@@ -1,0 +1,41 @@
+# Default values for joa-rt1sa.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  name: joa-rt1sa
+
+replicaCount: 1
+
+persistence:
+  enabled: true
+
+image:
+  # docker pull registry/repository:tag
+  registry: ${artifactory.url}
+  repository: joa-rt1sa
+  pullPolicy: IfNotPresent
+  tag: ${rt1-sa.version}
+
+startupProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 20
+  timeoutSeconds: 3
+  httpGet:
+    port: 28081
+
+livenessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 15
+  periodSeconds: 60
+  successThreshold: 1
+  timeoutSeconds: 3
+  httpGet:
+    port: 28081
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

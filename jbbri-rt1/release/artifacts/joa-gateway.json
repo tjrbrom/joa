@@ -1,0 +1,17 @@
+{
+  "ImageName": "joa-gateway",
+  "Description": "used to authorization between Nacos and Keycloak",
+  "DeliverToCustomer": false,
+  "DeliverToDevportal": false,
+  "GuidedInstallerSpecific": false,
+  "ApplianceSpecific": false,
+  "FeaturePackage": "joa",
+  "DeliverAsPoc": false,
+  "VanillaK8sImage": false,
+  "DeliverToNsp": false,
+  "ImportedImage": false,
+  "ImportedSource": "",
+  "TeamName": "12938 : SDAN-CP-SHA CN Solution",
+  "RemovedStatus": "",
+  "ReplacingStatus": ""
+}

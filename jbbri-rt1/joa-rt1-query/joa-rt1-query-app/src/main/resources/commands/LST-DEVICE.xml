@@ -1,0 +1,22 @@
+<RT1Command name="LST-DEVICE">
+    <validation enabled="true">
+        <tid regexpr="^[A-Za-z0-9-_]+$" required="false" />
+        <aid>
+         <group>
+          <attribute name="OLTID" regexpr="^.{1,255}$" required="false" />
+         </group>
+        </aid>
+        <ctag regexpr="^[A-Za-z0-9-_]+$" required="false" />
+        <param>
+        </param>
+    </validation>
+
+    <parser id="OLT.parser"/>
+
+    <handlers>
+    	<handler id="LST-DEVICE"/>
+    </handlers>
+
+    <outputMsgBuilder id="COMMON.outputMsgBuilder"/>
+    
+</RT1Command>

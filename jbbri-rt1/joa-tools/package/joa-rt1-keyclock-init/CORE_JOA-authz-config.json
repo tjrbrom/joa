@@ -1,0 +1,829 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [
+    {
+      "name": "CORE_JOA_RT1",
+      "ownerManagedAccess": false,
+      "displayName": "CORE JOA RT1 SERVICE",
+      "attributes": {},
+      "_id": "c9b5dbff-f526-4c3b-80eb-5c612a2ac2b4",
+      "uris": [],
+      "scopes": [
+        {
+          "name": "LST-PORTVLAN"
+        },
+        {
+          "name": "LST-TOPOLINK"
+        },
+        {
+          "name": "LST-POS"
+        },
+        {
+          "name": "DACT-LANPORT"
+        },
+        {
+          "name": "LST-DEVICE"
+        },
+        {
+          "name": "LST-LANPORT"
+        },
+        {
+          "name": "DACT-VOIPPORT"
+        },
+        {
+          "name": "LST-PORTMACADDRESS"
+        },
+        {
+          "name": "RST-ONU"
+        },
+        {
+          "name": "ADD-VLAN"
+        },
+        {
+          "name": "LST-MGINFO"
+        },
+        {
+          "name": "CFG-LANIPTVPORT"
+        },
+        {
+          "name": "LST-POTSINFO"
+        },
+        {
+          "name": "CFG-LANPORTVLAN"
+        },
+        {
+          "name": "DEL-VLAN"
+        },
+        {
+          "name": "DEL-LANIPTVPORT"
+        },
+        {
+          "name": "LST-VLAN"
+        },
+        {
+          "name": "ADD-LANIPTVPORT"
+        },
+        {
+          "name": "LST-IPTV"
+        },
+        {
+          "name": "LST-ONULANINFO"
+        },
+        {
+          "name": "CFG-VOIPSERVICE"
+        },
+        {
+          "name": "CFG-ONUBW"
+        },
+        {
+          "name": "ACT-VOIPPORT"
+        },
+        {
+          "name": "CFG-ONU"
+        },
+        {
+          "name": "ADD-ONU"
+        },
+        {
+          "name": "CFG-LANPORT"
+        },
+        {
+          "name": "LST-ONU"
+        },
+        {
+          "name": "TEST-CALLEESIMULATION"
+        },
+        {
+          "name": "DEL-LANPORTVLAN"
+        },
+        {
+          "name": "DEL-PONVLAN"
+        },
+        {
+          "name": "DEL-VOIPSERVICE"
+        },
+        {
+          "name": "ADD-PONVLAN"
+        },
+        {
+          "name": "LST-MGCFG"
+        },
+        {
+          "name": "LST-PONINFO"
+        },
+        {
+          "name": "LST-ONUSTATE"
+        },
+        {
+          "name": "PING"
+        },
+        {
+          "name": "ACT-LANPORT"
+        },
+        {
+          "name": "TEST-PPPOESIMULATION"
+        },
+        {
+          "name": "LST-ONUCFG"
+        },
+        {
+          "name": "DEL-ONU"
+        },
+        {
+          "name": "TEST-CALLERSIMULATION"
+        }
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "id": "2c1bcea1-b08d-4264-8e59-0ebfe5632b93",
+      "name": "Troubleshooting",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"CORE_JOA/故障诊断\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "a57673bb-39bf-4da9-aa62-e286fa12844f",
+      "name": "Inventory Collection",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"CORE_JOA/资源采集\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "c569fb3f-f896-42e8-8e7c-a974c2259b34",
+      "name": "Service Provisioning",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"CORE_JOA/开户系统\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "0c59c876-69b0-44fb-b33e-e79bf308d72a",
+      "name": "TEST-PPPOESIMULATION_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"TEST-PPPOESIMULATION\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "0c5d12a1-9ab4-40cf-9796-b7b773fa2a75",
+      "name": "DEL-VOIPSERVICE",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DEL-VOIPSERVICE\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "1012741f-baf9-4604-98d3-7ecda8e62361",
+      "name": "CFG-VOIPSERVICE_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"CFG-VOIPSERVICE\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "113c9147-c240-4413-bd89-6c5dfe579eb5",
+      "name": "LST-PORTMACADDRESS_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-PORTMACADDRESS\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "1373b1a6-90a5-464b-8208-5226fb671042",
+      "name": "TEST-CALLERSIMULATION_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"TEST-CALLERSIMULATION\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "144fa532-bfb2-40e9-af1c-fed60e27877d",
+      "name": "RST-ONU_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"RST-ONU\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "14cd285b-af84-44a9-95da-695068e7c43a",
+      "name": "CFG-ONUBW_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"CFG-ONUBW\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "17006162-cef7-44a3-a461-40eaa66334e9",
+      "name": "LST-ONUSTATE_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-ONUSTATE\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "1a52ff22-f65c-4f10-96d0-bdaf1f2fce51",
+      "name": "DACT-VOIPPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DACT-VOIPPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\",\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "1fab6de5-f23d-4fbf-be27-f10de6f40640",
+      "name": "DEL-VLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DEL-VLAN\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "208e6b68-ec4f-4a56-9a0e-8f488f1642f7",
+      "name": "LST-MGCFG_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-MGCFG\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "24dc5142-e607-45f5-bdaf-11e3235b4df2",
+      "name": "LST-DEVICE_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-DEVICE\"]",
+        "applyPolicies": "[\"Inventory Collection\"]"
+      }
+    },
+    {
+      "id": "28d30d60-2aef-4550-b2fe-4e84e7df7b56",
+      "name": "LST-ONUCFG_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-ONUCFG\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "2d167868-796a-4574-a1e5-5960c1decada",
+      "name": "LST-POTSINFO_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-POTSINFO\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "358162b3-5757-4489-a7c7-bc98fa52e8a8",
+      "name": "LST-MGINFO_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-MGINFO\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "4aae79e2-2798-4d64-b2da-6621a28451dd",
+      "name": "LST-ONULANINFO_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-ONULANINFO\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "58d80e80-d7f3-4de4-954a-fb5d52774b85",
+      "name": "ADD-PONVLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"ADD-PONVLAN\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "5d5778d2-657f-4dc1-b5ba-08752b0c7eb0",
+      "name": "TEST-CALLEESIMULATION_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"TEST-CALLEESIMULATION\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "5e1c3c8e-258f-4e40-bb4d-1fcbff1b397b",
+      "name": "PING_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"PING\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "5f440f77-9948-414b-9dd9-066413ea8562",
+      "name": "ACT-VOIPPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"ACT-VOIPPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\",\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "600a3f2d-6dac-4e09-a2bb-324edeb4c712",
+      "name": "DEL-ONU_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DEL-ONU\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "62a1bd10-79ad-454f-b155-c89369e2134f",
+      "name": "LST-POS_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-POS\"]",
+        "applyPolicies": "[\"Inventory Collection\"]"
+      }
+    },
+    {
+      "id": "65edf2fc-dfbf-4ebe-b8b1-bf9ed1dc1918",
+      "name": "LST-LANPORT",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-LANPORT\"]",
+        "applyPolicies": "[\"Inventory Collection\"]"
+      }
+    },
+    {
+      "id": "78bbe5ed-2673-4e0f-8f69-d2ffd496fc12",
+      "name": "LST-TOPOLINK_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-TOPOLINK\"]",
+        "applyPolicies": "[\"Inventory Collection\"]"
+      }
+    },
+    {
+      "id": "790c73fd-ff03-4286-a960-1beead37589d",
+      "name": "LST-PONINFO_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-PONINFO\"]",
+        "applyPolicies": "[\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "8563f2f3-123e-44b6-b42b-50d7b1aea047",
+      "name": "DEL-LANPORTVLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DEL-LANPORTVLAN\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "870f120c-1b92-49ff-9b2e-bb5eb519eef8",
+      "name": "CFG-LANPORTVLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"CFG-LANPORTVLAN\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "8774517c-5055-4d4e-a08a-ef2c603e8527",
+      "name": "LST-VLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-VLAN\"]",
+        "applyPolicies": "[\"Inventory Collection\",\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "8a8736d7-e559-467c-8fca-f59492323ea3",
+      "name": "LST-IPTV_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-IPTV\"]",
+        "applyPolicies": "[\"Inventory Collection\"]"
+      }
+    },
+    {
+      "id": "95708e21-b565-41fa-a16c-d5dc2969533d",
+      "name": "DEL-PONVLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DEL-PONVLAN\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "99c2eb68-f9c9-4688-abcd-db30c80f6e23",
+      "name": "CFG-LANPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"CFG-LANPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "9ea726fa-9ad6-4c28-ac51-01a8717074c1",
+      "name": "LST-PORTVLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-PORTVLAN\"]",
+        "applyPolicies": "[\"Inventory Collection\",\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "a57d0552-abe1-4c9f-9990-10ddd199fb5a",
+      "name": "ACT-LANPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"ACT-LANPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\",\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "a77e5700-d020-4d31-ac6d-4b4e39a51af3",
+      "name": "LST-ONU_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"LST-ONU\"]",
+        "applyPolicies": "[\"Inventory Collection\",\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "a99ced72-e3e1-41cc-be35-aea533beda97",
+      "name": "ADD-ONU_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"ADD-ONU\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "b543aaa9-5387-4b8c-85dd-afde17089b86",
+      "name": "ADD-LANIPTVPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"ADD-LANIPTVPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "b5918184-334d-470f-a845-ff27901bbdeb",
+      "name": "DACT-LANPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DACT-LANPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\",\"Troubleshooting\"]"
+      }
+    },
+    {
+      "id": "b87972d8-0e1c-4ff7-8399-9974e35ff471",
+      "name": "CFG-ONU_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"CFG-ONU\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "c19d7e1a-22b9-4a27-a6d9-2b1c4b3ff894",
+      "name": "DEL-LANIPTVPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"DEL-LANIPTVPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "dc5d79db-8bde-4dfa-bc43-1fa74ebce4a4",
+      "name": "ADD-VLAN_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"ADD-VLAN\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    },
+    {
+      "id": "f3fea9b9-878a-48b0-8893-319e2ac22cc9",
+      "name": "CFG-LANIPTVPORT_PERMISSION",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"CORE_JOA_RT1\"]",
+        "scopes": "[\"CFG-LANIPTVPORT\"]",
+        "applyPolicies": "[\"Service Provisioning\"]"
+      }
+    }
+  ],
+  "scopes": [
+    {
+      "id": "0085bd48-1184-4af9-ad51-ae0c9ba9ce9a",
+      "name": "LST-IPTV"
+    },
+    {
+      "id": "0329cf85-defe-4c89-a88b-98e262b82eb8",
+      "name": "LST-POTSINFO"
+    },
+    {
+      "id": "098933f3-dae1-49ca-82f9-9071192eee1d",
+      "name": "LST-VLAN"
+    },
+    {
+      "id": "196fc906-dc5d-4263-b094-cdef3db27441",
+      "name": "DEL-ONU"
+    },
+    {
+      "id": "1a8e1286-89f2-4cc4-a52d-865b92cda379",
+      "name": "DEL-LANIPTVPORT"
+    },
+    {
+      "id": "277412f4-2b45-40ae-a14f-fe5a5ce0c100",
+      "name": "LST-LANPORT"
+    },
+    {
+      "id": "280578fb-df55-4c26-8f97-0f2da9964d08",
+      "name": "TEST-PPPOESIMULATION"
+    },
+    {
+      "id": "285ffb40-64bf-41fe-8b42-616023898ff7",
+      "name": "TEST-CALLERSIMULATION"
+    },
+    {
+      "id": "3a863bd4-2086-43d3-8eb8-919c7a173945",
+      "name": "DEL-PONVLAN"
+    },
+    {
+      "id": "40668980-9396-46c8-9e4b-8098caac3db2",
+      "name": "CFG-ONUBW"
+    },
+    {
+      "id": "422a400e-c625-4d38-81d7-08119e0a43af",
+      "name": "LST-POS"
+    },
+    {
+      "id": "441c0795-1877-4955-a3a1-242ce8dc18fe",
+      "name": "LST-DEVICE"
+    },
+    {
+      "id": "446b593f-f940-4cf1-a16c-a5194fd1ca90",
+      "name": "LST-PORTMACADDRESS"
+    },
+    {
+      "id": "44aab81e-a143-4835-82d7-f8f06372e2d1",
+      "name": "LST-PORTVLAN"
+    },
+    {
+      "id": "4504aa93-5068-4e33-80dd-bb90e19fb262",
+      "name": "CFG-VOIPSERVICE"
+    },
+    {
+      "id": "4ddecf57-ec9a-448f-9f2e-31f32bebab31",
+      "name": "ACT-VOIPPORT"
+    },
+    {
+      "id": "57228c40-8493-436b-a43a-10d778f82de7",
+      "name": "CFG-LANPORT"
+    },
+    {
+      "id": "5f377972-4c2a-4bb5-aecc-31896de3c4d6",
+      "name": "DEL-VLAN"
+    },
+    {
+      "id": "69ccec60-05ab-4353-922b-1564e26a0261",
+      "name": "CFG-LANIPTVPORT"
+    },
+    {
+      "id": "7d1937ee-53e1-4df2-971b-22757dcbf179",
+      "name": "CFG-LANPORTVLAN"
+    },
+    {
+      "id": "82733a34-a097-4d98-88e0-0d907d40a43c",
+      "name": "LST-ONUCFG"
+    },
+    {
+      "id": "84420616-839b-4607-862f-067115f5c5c5",
+      "name": "RST-ONU"
+    },
+    {
+      "id": "84a4abc3-85a8-49d1-9b5e-6cad633e4407",
+      "name": "LST-MGINFO"
+    },
+    {
+      "id": "9136d082-21bf-450a-a1c3-ce3922926000",
+      "name": "PING"
+    },
+    {
+      "id": "9435356e-f00c-4261-a415-f15a97774df5",
+      "name": "LST-ONUSTATE"
+    },
+    {
+      "id": "97fe395c-a17c-4b6c-8803-136fff76fa52",
+      "name": "ADD-ONU"
+    },
+    {
+      "id": "98c1574c-df44-4512-a335-aae20c0e3481",
+      "name": "DEL-LANPORTVLAN"
+    },
+    {
+      "id": "a7095692-2d8c-444f-99e3-d585a600bc25",
+      "name": "DEL-VOIPSERVICE"
+    },
+    {
+      "id": "aa134477-9d86-4e3a-822e-e0c042b153ca",
+      "name": "LST-ONULANINFO"
+    },
+    {
+      "id": "ac0eb67e-991d-48bd-95b1-1bc18abe6324",
+      "name": "DACT-LANPORT"
+    },
+    {
+      "id": "b1c10dda-68db-4ba3-8f85-180b992aa4d2",
+      "name": "LST-PONINFO"
+    },
+    {
+      "id": "b2e75b85-871c-471f-81a6-f22945fe47f6",
+      "name": "ACT-LANPORT"
+    },
+    {
+      "id": "c5c3653e-3735-4f17-957e-0c8381fdaa05",
+      "name": "ADD-LANIPTVPORT"
+    },
+    {
+      "id": "d47914fe-2abf-4406-87e0-6e71223c1ac4",
+      "name": "LST-TOPOLINK"
+    },
+    {
+      "id": "dc727b5f-c485-44ec-9909-e48a0304b487",
+      "name": "DACT-VOIPPORT"
+    },
+    {
+      "id": "dc993562-36a0-4bcb-8503-7f412dd64e7a",
+      "name": "TEST-CALLEESIMULATION"
+    },
+    {
+      "id": "de6cfc91-ed10-460d-be6a-e5096a264d4b",
+      "name": "LST-ONU"
+    },
+    {
+      "id": "dfaea0c6-bb98-4dd9-8161-b8672c93e8c5",
+      "name": "LST-MGCFG"
+    },
+    {
+      "id": "e5f456c5-0842-4db4-98ca-a276f92f62c4",
+      "name": "CFG-ONU"
+    },
+    {
+      "id": "e86f0b89-ab02-49e7-8df8-3b199c2bb47f",
+      "name": "ADD-PONVLAN"
+    },
+    {
+      "id": "eaa64a70-3a5a-4bf8-b5a1-3638f545de41",
+      "name": "ADD-VLAN"
+    }
+  ],
+  "decisionStrategy": "UNANIMOUS"
+}

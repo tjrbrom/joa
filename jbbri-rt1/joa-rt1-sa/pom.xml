@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>joa-rt1-sa</artifactId>
+	<packaging>pom</packaging>
+
+	<name>${project.artifactId}</name>
+	<description>JOA RT1 Service Provisioning</description>
+	<modules>
+		<module>joa-rt1-sa-app</module>
+		<module>package</module>
+		<module>helm-charts</module>
+	</modules>
+
+	<parent>
+		<groupId>com.x.hhqs.joa</groupId>
+	    <artifactId>joa-rt1</artifactId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+</project>

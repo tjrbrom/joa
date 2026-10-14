@@ -1,0 +1,5 @@
+apiVersion: v2
+name: joa-rt1sa
+description: A Helm chart for JOA RT1 SA
+version: ${helm.chart.version}
+appVersion: ${app.version}

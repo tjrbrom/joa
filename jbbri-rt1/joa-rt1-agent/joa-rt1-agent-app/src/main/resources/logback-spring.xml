@@ -1,0 +1,98 @@
+<configuration>
+    <property name="APP_NAME" value="joa.rt1agent"/>
+    <property name="CONTAINER_NAME" value="${HOSTNAME:-${APP_NAME}}"/>
+    <property name="CONTAINER_ID" value="${HOSTNAME:-${APP_NAME}}"/>
+    <property name="FLUENTD_HOST" value="${CORE_FLUENTD_SERVICE_HOST:-core-fluentd}"/>
+    <property name="FLUENTD_PORT" value="${CORE_FLUENTD_SERVICE_PORT:-24224}"/>
+
+    <contextName>${APP_NAME}</contextName>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FLUENCY_SYNC" class="ch.qos.logback.more.appenders.FluencyLogbackAppender">
+        <tag>${APP_NAME}</tag>
+
+        <remoteHost>${FLUENTD_HOST}</remoteHost>
+        <port>${FLUENTD_PORT}</port>
+
+        <additionalField>
+            <key>application</key>
+            <value>${APP_NAME}</value>
+        </additionalField>
+        <additionalField>
+            <key>container_id</key>
+            <value>${CONTAINER_ID}</value>
+        </additionalField>
+        <additionalField>
+            <key>container_name</key>
+            <value>${CONTAINER_NAME}</value>
+        </additionalField>
+
+        <ignoredField>logger</ignoredField>
+        <ignoredField>thread</ignoredField>
+        <ignoredField>level</ignoredField>
+
+        <ackResponseMode>true</ackResponseMode>
+        <bufferChunkInitialSize>2097152</bufferChunkInitialSize>
+        <bufferChunkRetentionSize>16777216</bufferChunkRetentionSize>
+        <maxBufferSize>268435456</maxBufferSize>
+        <bufferChunkRetentionTimeMillis>1000</bufferChunkRetentionTimeMillis>
+        <connectionTimeoutMilli>5000</connectionTimeoutMilli>
+        <readTimeoutMilli>5000</readTimeoutMilli>
+        <waitUntilBufferFlushed>30</waitUntilBufferFlushed>
+        <waitUntilFlusherTerminated>40</waitUntilFlusherTerminated>
+        <flushAttemptIntervalMillis>200</flushAttemptIntervalMillis>
+        <senderMaxRetryCount>12</senderMaxRetryCount>
+        <useEventTime>true</useEventTime>
+        <sslEnabled>false</sslEnabled>
+        <jvmHeapBufferMode>false</jvmHeapBufferMode>
+        <flattenMapMarker>false</flattenMapMarker>
+        <markerPrefix>marker</markerPrefix>
+
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers class="net.logstash.logback.composite.loggingevent.LoggingEventJsonProviders">
+                <pattern>
+                    <pattern>
+                        {
+                        "date":"%date{ISO8601}",
+                        "level":"%level",
+                        "thread":"%thread",
+                        "category":"%logger",
+                        "message":"%message",
+                        "throwable":"%exception{5}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+
+        <messageFieldKeyName>log</messageFieldKeyName>
+
+    </appender>
+
+    <appender name="FLUENCY" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- Max queue size of logs which is waiting to be sent (When it reaches to the max size, the log will be disappeared). -->
+        <queueSize>999</queueSize>
+        <!-- Never block when the queue becomes full. -->
+        <neverBlock>true</neverBlock>
+        <!-- The default maximum queue flush time allowed during appender stop.
+             If the worker takes longer than this time it will exit, discarding any remaining items in the queue.
+             10000 millis
+         -->
+        <maxFlushTime>1000</maxFlushTime>
+        <appender-ref ref="FLUENCY_SYNC" />
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+        <if condition='property("ENV").equals("container")'>
+            <then>
+                <appender-ref ref="FLUENCY"/>
+            </then>
+        </if>
+    </root>
+</configuration>

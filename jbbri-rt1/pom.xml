@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <artifactId>joa-rt1</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <scm>
+        <connection>scm:git:gerrit.app.y.com:29418/FNMS/parent-poms</connection>
+    </scm>
+
+    <name>${project.artifactId}</name>
+    <description>JOA RT1 Adapter</description>
+
+    <parent>
+        <groupId>com.x.hhqs.joa</groupId>
+        <artifactId>joa-parent-pom</artifactId>
+        <version>${revision}</version>
+        <relativePath>../joa-parent-pom/pom.xml</relativePath>
+    </parent>
+
+    <modules>
+        <module>joa-rt1-common</module>
+        <module>joa-rt1-agent</module>
+        <module>joa-rt1-sa</module>
+        <module>joa-rt1-query</module>
+        <module>joa-tools</module>
+        <module>joa-gateway</module>
+    </modules>
+
+    <properties>
+        <!-- for pipeline limitation -->
+        <hhqs.joa-common.version>${revision}</hhqs.joa-common.version>
+        <hhqs.joa-rt1.version>${revision}</hhqs.joa-rt1.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.x.hhqs.joa</groupId>
+                <artifactId>joa-ac-restclient</artifactId>
+                <version>${hhqs.joa-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.x.hhqs.joa</groupId>
+                <artifactId>joa-rt1-common</artifactId>
+                <version>${hhqs.joa-rt1.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

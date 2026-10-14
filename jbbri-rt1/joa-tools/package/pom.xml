@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>joa-tools-package</artifactId>
+
+  <name>JOA Tools/${project.artifactId}</name>
+  <description>JOA Tools Package</description>
+
+  <parent>
+    <groupId>com.x.hhqs.joart1.joa-tools</groupId>
+    <artifactId>root-pom</artifactId>
+    <version>${revision}</version>
+    <relativePath>../pom.xml</relativePath>
+    <!--<relativePath/>  lookup parent from repository -->
+  </parent>
+
+  <properties>
+    <!-- Nokia/FNMS Dependencies -->
+    <hhqs.container.version>${revision}</hhqs.container.version>
+    <hhqs.specificBuild>${project.version}</hhqs.specificBuild>
+    <!-- application properties -->
+    <baseImage>artifactory-blr-hhqs.int.net.x.com:9000/hhqs-base-java17:${hhqs.base.java17.image.version}</baseImage>
+    <imageName>joa-tools</imageName>
+    <imageTag>24.9.0-REL_1</imageTag>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.x.hhqs.joart1.joa-tools</groupId>
+      <artifactId>joa-nacos-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/generated-resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jar-features</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>joa-nacos-client</includeArtifactIds>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>${docker-maven-plugin.version}</version>
+        <configuration>
+          <buildArgs>
+            <baseImage>${baseImage}</baseImage>
+          </buildArgs>
+          <imageName>${imageName}</imageName>
+          <dockerDirectory>./</dockerDirectory>
+          <forceTags>true</forceTags>
+          <imageTags>
+            <imageTag>${imageTag}</imageTag>
+          </imageTags>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.outputDirectory}</directory>
+									<includes>
+										<include>Dockerfile</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}</directory>
+              <includes>
+                <include>Dockerfile</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

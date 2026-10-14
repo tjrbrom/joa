@@ -1,0 +1,17 @@
+{
+  "ImageName": "joa-rt1query",
+  "Description": "handle all of the RT1 commands about Query",
+  "DeliverToCustomer": true,
+  "DeliverToDevportal": false,
+  "GuidedInstallerSpecific": false,
+  "ApplianceSpecific": false,
+  "FeaturePackage": "joa",
+  "DeliverAsPoc": false,
+  "VanillaK8sImage": false,
+  "DeliverToNsp": false,
+  "ImportedImage": false,
+  "ImportedSource": "",
+  "TeamName": "12938 : SDAN-CP-SHA CN Solution",
+  "RemovedStatus": "",
+  "ReplacingStatus": ""
+}

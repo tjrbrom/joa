@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-joa-rt1sa
+  labels:
+    app: joa-rt1sa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joa-rt1sa
+  template:
+    metadata:
+      labels:
+        app: joa-rt1sa
+    spec:
+      containers:
+      - name: local-joa-rt1sa
+        image: joa-rt1sa
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: SPRING_CLOUD_NACOS_SERVER_ADDR
+            value: joa-nacos-cs
+        envFrom:
+          - configMapRef:
+              name: joa-rt1sa-config
+        volumeMounts:
+          - mountPath: /joa/config
+            name: rt1sa-volume
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 28081
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 20
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 28081
+          initialDelaySeconds: 15
+          periodSeconds: 60
+          failureThreshold: 3
+          timeoutSeconds: 3
+      volumes:
+        - name: rt1sa-volume
+          hostPath:
+            path: /joa/rt1sa/config
+            type: DirectoryOrCreate

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: joa-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: nacos
+          uri: http://joa-nacos-cs:8848
+          predicates:
+            - Path=/nacos/**

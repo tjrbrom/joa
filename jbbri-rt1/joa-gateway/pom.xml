@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>com.x.hhqs.joa</groupId>
+		<artifactId>joa-rt1</artifactId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.x.hhqs.joart1.joa-gateway</groupId>
+	<artifactId>root-pom</artifactId>
+	<packaging>pom</packaging>
+
+	<name>JOA Gateway</name>
+	<description>JOA Gateway</description>
+
+	<modules>
+	  <module>joa-gateway-app</module>
+		<module>package</module>
+		<module>helm-charts</module>
+	</modules>
+
+
+</project>

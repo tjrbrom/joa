@@ -1,0 +1,37 @@
+<rpc
+    xmlns='urn:ietf:params:xml:ns:netconf:base:1.0'>
+    <edit-config>
+        <target>
+            <running></running>
+        </target>
+        <test-option>set</test-option>
+        <error-option>rollback-on-error</error-option>
+        <config>
+            <ibn
+                xmlns='http://www.x.com/management-solutions/ibn'>
+                <intent
+                    xmlns:yang='urn:ietf:params:xml:ns:yang:1'
+                    xmlns:xc='urn:ietf:params:xml:ns:netconf:base:1.0' xc:operation='create'>
+                    <target>${serviceName}#${customerName}</target>
+                    <intent-type>l2-user</intent-type>
+                    <intent-type-version>11</intent-type-version>
+                    <required-network-state>active</required-network-state>
+                    <intent-specific-data>
+                        <l2-user
+                            xmlns='http://www.x.com/management-solutions/l2-user'>
+                            <#--static-ipv4-address>
+                                <address>135.251.11.25</address>
+                                <prefix-length>24</prefix-length>
+                            </static-ipv4-address-->
+                            <user-device-name>${userDeviceName}</user-device-name>
+                            <uni-id>${uniId}</uni-id>
+                            <l2-infra>${serviceName}</l2-infra>
+                            <transparent-q-vlan-id>${transparentQVlanId}</transparent-q-vlan-id>
+                            <service-profile>${serviceProfile}</service-profile>
+                        </l2-user>
+                    </intent-specific-data>
+                </intent>
+            </ibn>
+        </config>
+    </edit-config>
+</rpc>

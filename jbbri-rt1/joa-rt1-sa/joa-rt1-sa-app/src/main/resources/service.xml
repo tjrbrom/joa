@@ -1,0 +1,3561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service-templates>
+    <!-- samples for twoPotsFourDataPorts with default profiles -->
+    <service-template olttype="device-mf" pontype="mpm-gpon-xgs" servicetype="twoPotsFourDataPorts" onusubtype="">
+        <oss-command name="ADD-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-ont-for-device-mf-twoPotsFourDataPorts.ftl">
+                        <model>
+                            <data name="ontTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="fiberName" value="${sbiMetaData:PONTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}" optional="true"/>
+                            <data name="onuId" value="${nbiMetaData:ONUID}"/>
+                            <data name="onuNo" value="${nbiMetaData:ONUNO}" optional="true"/>
+                            <data name="ponType" value="gpon"/>
+                            <data name="onuServiceProfile" value="ont_default"/>
+                            <data name="potsServiceProfile" value="default"/>
+                            <data name="lanPortServiceProfile" value="default"/>
+                            <data name="potsPortServiceProfile" value="default"/>
+                            <data name="onuSpeedProfile" value="UP10M_DOWN100M"/>
+                            <data name="ontName" value="${nbiMetaData:NAME}" optional="true"/>
+                            <data name="ontIP" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="creationUser" value="${userInfo:username}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="HSI-100M-10M"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:serviceName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-mcast-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                        </model>
+                        <selectors>
+                            <selector key="mcastInfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-mcast-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                            <data name="l2UserName" value="${context:l2UserName}"/>
+                            <data name="mcastInfraName" value="${context:mcastInfraName}"/>
+                            <data name="serviceProfile" value="IPTV_Single_VLAN"/>
+                            <data name="permittedPackages" value="default"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-ont-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="type" value="ont"/>
+                            <data name="target" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                        <selectors>
+                            <selector key="expectedSerialNumber" type="regex" optional="true">
+                                <![CDATA[<ont:expected-serial-number>(.+?)</ont:expected-serial-number>]]>
+                            </selector>
+                            <selector key="expectedRegistrationId" type="regex" optional="true">
+                                <![CDATA[<ont:expected-registration-id>(.+?)</ont:expected-registration-id>]]>
+                            </selector>
+                            <selector key="expectedLoid" type="regex" optional="true">
+                                <![CDATA[<ont:expected-loid>(.+?)</ont:expected-loid>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}"/>
+                            <data name="authInfo" value="${nbiMetaData:AUTHINFO}"/>
+                            <data name="expectedSerialNumber" value="${context:expectedSerialNumber}" optional="true"/>
+                            <data name="expectedRegistrationId" value="${context:expectedRegistrationId}"
+                                  optional="true"/>
+                            <data name="expectedLoid" value="${context:expectedLoid}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONUBW">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="ontSpeedProfile" value="${nbiMetaData:UPBW}_${nbiMetaData:DOWNBW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="405"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-mcast-user-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="mcastUserTarget" value="${context:l2UserTarget}"/>
+                            <data name="maxGroupNumber" value="${nbiMetaData:MAXGRP}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2UserTarget}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="onuPort" value="${nbiMetaData:ONUPORT}"/>
+                            <data name="uniSpeedProfile" value="${nbiMetaData:BW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VOIPVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-agent-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="sipAgentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="voipL2InfraName" value="${context:l2InfraName}"/>
+                            <data name="ipMode" value="${nbiMetaData:IPMODE}" optional="true"/>
+                            <data name="ipAddress" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="netmask" value="${nbiMetaData:IPMASK}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="serviceName" value="${context:l2InfraName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                            <data name="sipAddressOfRecord" value="${nbiMetaData:SIPREGDM}"/>
+                            <data name="sipDisplayName" value="${nbiMetaData:PHONENUMBER}"/>
+                            <data name="sipUserName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipPassword" value="${nbiMetaData:SIPUSERPWD}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:l2InfraName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-standard-voip-sip-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                        <selectors>
+                            <selector key="voipSipUserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:voipSipUserTarget}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="RST-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="reset-ont.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+    <!-- samples for INTEGRATED with default profiles -->
+    <service-template olttype="device-mf" pontype="mpm-gpon-xgs" servicetype="INTEGRATED" onusubtype="">
+        <oss-command name="ADD-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-ont-for-device-mf-INTEGRATED.ftl">
+                        <model>
+                            <data name="ontTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="fiberName" value="${sbiMetaData:PONTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}" optional="true"/>
+                            <data name="onuId" value="${nbiMetaData:ONUID}"/>
+                            <data name="onuNo" value="${nbiMetaData:ONUNO}" optional="true"/>
+                            <data name="ponType" value="gpon"/>
+                            <data name="onuServiceProfile" value="ont_default"/>
+                            <data name="uniServiceProfile" value="default"/>
+                            <data name="onuSpeedProfile" value="UP10M_DOWN100M"/>
+                            <data name="ontName" value="${nbiMetaData:NAME}" optional="true"/>
+                            <data name="ontIP" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="creationUser" value="${userInfo:username}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex" optional="true">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="!${context:serviceName}">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="VEIP_${nbiMetaData:SVLAN}.${nbiMetaData:CVLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="l2InfraTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"
+                                  to-context="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl" condition="${context:l2InfraTarget}">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="HSI-100M-10M"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-mcast-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                        </model>
+                        <selectors>
+                            <selector key="mcastInfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-mcast-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                            <data name="l2UserName" value="${context:l2UserName}"/>
+                            <data name="mcastInfraName" value="${context:mcastInfraName}"/>
+                            <data name="serviceProfile" value="IPTV_Single_VLAN"/>
+                            <data name="permittedPackages" value="default"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-ont-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="type" value="ont"/>
+                            <data name="target" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                        <selectors>
+                            <selector key="expectedSerialNumber" type="regex" optional="true">
+                                <![CDATA[<ont:expected-serial-number>(.+?)</ont:expected-serial-number>]]>
+                            </selector>
+                            <selector key="expectedRegistrationId" type="regex" optional="true">
+                                <![CDATA[<ont:expected-registration-id>(.+?)</ont:expected-registration-id>]]>
+                            </selector>
+                            <selector key="expectedLoid" type="regex" optional="true">
+                                <![CDATA[<ont:expected-loid>(.+?)</ont:expected-loid>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}"/>
+                            <data name="authInfo" value="${nbiMetaData:AUTHINFO}"/>
+                            <data name="expectedSerialNumber" value="${context:expectedSerialNumber}" optional="true"/>
+                            <data name="expectedRegistrationId" value="${context:expectedRegistrationId}"
+                                  optional="true"/>
+                            <data name="expectedLoid" value="${context:expectedLoid}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONUBW">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="ontSpeedProfile" value="${nbiMetaData:UPBW}_${nbiMetaData:DOWNBW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="505"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-mcast-user-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="mcastUserTarget" value="${context:l2UserTarget}"/>
+                            <data name="maxGroupNumber" value="${nbiMetaData:MAXGRP}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2UserTarget}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="RST-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="reset-ont.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+    <!-- samples for ADD-VLAN/DEL-VLAN with default profiles -->
+    <service-template olttype="device-mf" pontype="" servicetype="" onusubtype="">
+        <oss-command name="ADD-VLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="${nbiMetaData:SERVICE}=HSI">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="${nbiMetaData:SERVICE}_0.${nbiMetaData:VLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="portList" value="${nbiMetaData:PORTLIST}" optional="true"/>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="serviceDesc" value="${nbiMetaData:DESC}"/>
+                            <data name="mVlanFlag" value="${nbiMetaData:MVLANFLAG}" optional="true"/>
+                            <data name="mVlanPri" value="${nbiMetaData:MVLANPRI}" optional="true"/>
+                            <data name="serviceType" value="${nbiMetaData:SERVICE}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="${nbiMetaData:SERVICE}=IPTV">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="${nbiMetaData:SERVICE}_0.${nbiMetaData:VLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="multicast-vpn"/>
+                            <data name="portList" value="${nbiMetaData:PORTLIST}" optional="true"/>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="serviceDesc" value="${nbiMetaData:DESC}"/>
+                            <data name="mVlanFlag" value="${nbiMetaData:MVLANFLAG}" optional="true"/>
+                            <data name="mVlanPri" value="${nbiMetaData:MVLANPRI}" optional="true"/>
+                            <data name="serviceType" value="${nbiMetaData:SERVICE}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="${nbiMetaData:SERVICE}=VOIP">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="${nbiMetaData:SERVICE}_0.${nbiMetaData:VLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="portList" value="${nbiMetaData:PORTLIST}" optional="true"/>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="serviceDesc" value="${nbiMetaData:DESC}"/>
+                            <data name="mVlanFlag" value="${nbiMetaData:MVLANFLAG}" optional="true"/>
+                            <data name="mVlanPri" value="${nbiMetaData:MVLANPRI}" optional="true"/>
+                            <data name="serviceType" value="${nbiMetaData:SERVICE}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraTarget" type="xpath">
+                                <![CDATA[//ibn:ibn/ibn:intent[not(ibn:intent-specific-data/l2infra:l2-infra/l2infra:s-vlan-id)]/ibn:target]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+    <!-- customized gpon-JOA_GONT_TYPE templates for tests -->
+    <service-template olttype="device-mf" pontype="gpon" servicetype="JOA_GONT_TYPE" onusubtype="">
+        <oss-command name="ADD-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-ont-for-device-mf-gpon-JOA_GONT_TYPE.ftl">
+                        <model>
+                            <data name="ontTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="fiberName" value="${sbiMetaData:PONTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}" optional="true"/>
+                            <data name="onuId" value="${nbiMetaData:ONUID}"/>
+                            <data name="onuNo" value="${nbiMetaData:ONUNO}" optional="true"/>
+                            <data name="ponType" value="gpon"/>
+                            <data name="onuServiceProfile" value="JOA_ONU_SERVICE"/>
+                            <data name="onuSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsServiceProfile" value="default"/>
+                            <data name="uniPortServiceProfile4q" value="JOA_UNI_Service_4q"/>
+                            <data name="uniPortServiceProfile8q" value="JOA_UNI_Service_8q"/>
+                            <data name="uniSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsPortServiceProfile" value="default"/>
+                            <data name="ontName" value="${nbiMetaData:NAME}" optional="true"/>
+                            <data name="ontIP" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="creationUser" value="${userInfo:username}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex" optional="true">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="!${context:serviceName}">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="VEIP_${nbiMetaData:SVLAN}.${nbiMetaData:CVLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="l2InfraTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"
+                                  to-context="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl" condition="${context:l2InfraTarget}">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-user-device-name-and-q-vlan-id.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=1">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=2">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI2"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=3">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI3"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=4">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI4"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-mcast-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                        </model>
+                        <selectors>
+                            <selector key="mcastInfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-mcast-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                            <data name="l2UserName" value="${context:l2UserName}"/>
+                            <data name="mcastInfraName" value="${context:mcastInfraName}"/>
+                            <data name="serviceProfile" value="IPTV_Single_VLAN"/>
+                            <data name="permittedPackages" value="default"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-ont-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="type" value="ont"/>
+                            <data name="target" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                        <selectors>
+                            <selector key="expectedSerialNumber" type="regex" optional="true">
+                                <![CDATA[<ont:expected-serial-number>(.+?)</ont:expected-serial-number>]]>
+                            </selector>
+                            <selector key="expectedRegistrationId" type="regex" optional="true">
+                                <![CDATA[<ont:expected-registration-id>(.+?)</ont:expected-registration-id>]]>
+                            </selector>
+                            <selector key="expectedLoid" type="regex" optional="true">
+                                <![CDATA[<ont:expected-loid>(.+?)</ont:expected-loid>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}"/>
+                            <data name="authInfo" value="${nbiMetaData:AUTHINFO}"/>
+                            <data name="expectedSerialNumber" value="${context:expectedSerialNumber}" optional="true"/>
+                            <data name="expectedRegistrationId" value="${context:expectedRegistrationId}"
+                                  optional="true"/>
+                            <data name="expectedLoid" value="${context:expectedLoid}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONUBW">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="ontSpeedProfile" value="${nbiMetaData:UPBW}_${nbiMetaData:DOWNBW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="405"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-mcast-user-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="mcastUserTarget" value="${context:l2UserTarget}"/>
+                            <data name="maxGroupNumber" value="${nbiMetaData:MAXGRP}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2UserTarget}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="onuPort" value="${nbiMetaData:ONUPORT}"/>
+                            <data name="uniSpeedProfile" value="${nbiMetaData:BW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VOIPVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-agent-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="sipAgentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="voipL2InfraName" value="${context:l2InfraName}"/>
+                            <data name="customerId" value="${nbiMetaData:PHONENUMBER}"/>
+                            <data name="ipMode" value="${nbiMetaData:IPMODE}" optional="true"/>
+                            <data name="ipAddress" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="netmask" value="${nbiMetaData:IPMASK}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="serviceName" value="${context:l2InfraName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                            <data name="sipAddressOfRecord" value="${nbiMetaData:SIPREGDM}"/>
+                            <data name="sipDisplayName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipUserName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipPassword" value="${nbiMetaData:SIPUSERPWD}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:l2InfraName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-standard-voip-sip-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                        <selectors>
+                            <selector key="voipSipUserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:voipSipUserTarget}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="RST-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="reset-ont.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+    <!-- customized mpm-gpon-xgs-JOA_GONT_TYPE templates for tests -->
+    <service-template olttype="device-mf" pontype="mpm-gpon-xgs" servicetype="JOA_GONT_TYPE" onusubtype="">
+        <oss-command name="ADD-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-ont-for-device-mf-gpon-JOA_GONT_TYPE.ftl">
+                        <model>
+                            <data name="ontTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="fiberName" value="${sbiMetaData:PONTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}" optional="true"/>
+                            <data name="onuId" value="${nbiMetaData:ONUID}"/>
+                            <data name="onuNo" value="${nbiMetaData:ONUNO}" optional="true"/>
+                            <data name="ponType" value="gpon"/>
+                            <data name="onuServiceProfile" value="JOA_ONU_SERVICE"/>
+                            <data name="onuSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsServiceProfile" value="default"/>
+                            <data name="uniPortServiceProfile4q" value="JOA_UNI_Service_4q"/>
+                            <data name="uniPortServiceProfile8q" value="JOA_UNI_Service_8q"/>
+                            <data name="uniSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsPortServiceProfile" value="default"/>
+                            <data name="ontName" value="${nbiMetaData:NAME}" optional="true"/>
+                            <data name="ontIP" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="creationUser" value="${userInfo:username}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex" optional="true">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="!${context:serviceName}">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="VEIP_${nbiMetaData:SVLAN}.${nbiMetaData:CVLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="l2InfraTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"
+                                  to-context="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl" condition="${context:l2InfraTarget}">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-user-device-name-and-q-vlan-id.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=1">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=2">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI2"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=3">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI3"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=4">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI4"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-mcast-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                        </model>
+                        <selectors>
+                            <selector key="mcastInfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-mcast-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                            <data name="l2UserName" value="${context:l2UserName}"/>
+                            <data name="mcastInfraName" value="${context:mcastInfraName}"/>
+                            <data name="serviceProfile" value="IPTV_Single_VLAN"/>
+                            <data name="permittedPackages" value="default"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-ont-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="type" value="ont"/>
+                            <data name="target" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                        <selectors>
+                            <selector key="expectedSerialNumber" type="regex" optional="true">
+                                <![CDATA[<ont:expected-serial-number>(.+?)</ont:expected-serial-number>]]>
+                            </selector>
+                            <selector key="expectedRegistrationId" type="regex" optional="true">
+                                <![CDATA[<ont:expected-registration-id>(.+?)</ont:expected-registration-id>]]>
+                            </selector>
+                            <selector key="expectedLoid" type="regex" optional="true">
+                                <![CDATA[<ont:expected-loid>(.+?)</ont:expected-loid>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}"/>
+                            <data name="authInfo" value="${nbiMetaData:AUTHINFO}"/>
+                            <data name="expectedSerialNumber" value="${context:expectedSerialNumber}" optional="true"/>
+                            <data name="expectedRegistrationId" value="${context:expectedRegistrationId}"
+                                  optional="true"/>
+                            <data name="expectedLoid" value="${context:expectedLoid}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONUBW">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="ontSpeedProfile" value="${nbiMetaData:UPBW}_${nbiMetaData:DOWNBW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="405"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-mcast-user-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="mcastUserTarget" value="${context:l2UserTarget}"/>
+                            <data name="maxGroupNumber" value="${nbiMetaData:MAXGRP}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2UserTarget}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="onuPort" value="${nbiMetaData:ONUPORT}"/>
+                            <data name="uniSpeedProfile" value="${nbiMetaData:BW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VOIPVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-agent-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="sipAgentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="voipL2InfraName" value="${context:l2InfraName}"/>
+                            <data name="customerId" value="${nbiMetaData:PHONENUMBER}"/>
+                            <data name="ipMode" value="${nbiMetaData:IPMODE}" optional="true"/>
+                            <data name="ipAddress" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="netmask" value="${nbiMetaData:IPMASK}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="serviceName" value="${context:l2InfraName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                            <data name="sipAddressOfRecord" value="${nbiMetaData:SIPREGDM}"/>
+                            <data name="sipDisplayName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipUserName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipPassword" value="${nbiMetaData:SIPUSERPWD}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:l2InfraName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-standard-voip-sip-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                        <selectors>
+                            <selector key="voipSipUserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:voipSipUserTarget}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="RST-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="reset-ont.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+    <!-- customized mpm-gpon-xgs-JOA_XG_ONT_TYPE templates for tests -->
+    <service-template olttype="device-mf" pontype="mpm-gpon-xgs" servicetype="JOA_XG_ONT_TYPE"
+                      onusubtype="I-240W-MC">
+        <oss-command name="ADD-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-ont-for-device-mf-mpm-JOA_XG_ONT_TYPE.ftl">
+                        <model>
+                            <data name="ontTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="fiberName" value="${sbiMetaData:PONTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}" optional="true"/>
+                            <data name="onuId" value="${nbiMetaData:ONUID}"/>
+                            <data name="onuNo" value="${nbiMetaData:ONUNO}" optional="true"/>
+                            <data name="ponType" value="xgs"/>
+                            <data name="onuServiceProfile" value="JOA_ONU_SERVICE"/>
+                            <data name="onuSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsServiceProfile" value="default"/>
+                            <data name="uniPortServiceProfile4q" value="JOA_UNI_Service_4q"/>
+                            <data name="uniPortServiceProfile8q" value="JOA_UNI_Service_8q"/>
+                            <data name="uniSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsPortServiceProfile" value="default"/>
+                            <data name="ontName" value="${nbiMetaData:NAME}" optional="true"/>
+                            <data name="ontIP" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="creationUser" value="${userInfo:username}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex" optional="true">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="!${context:serviceName}">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="VEIP_${nbiMetaData:SVLAN}.${nbiMetaData:CVLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="l2InfraTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"
+                                  to-context="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl" condition="${context:l2InfraTarget}">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-user-device-name-and-q-vlan-id.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=1">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=2">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI2"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=3">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI3"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=4">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI4"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-mcast-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                        </model>
+                        <selectors>
+                            <selector key="mcastInfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-mcast-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                            <data name="l2UserName" value="${context:l2UserName}"/>
+                            <data name="mcastInfraName" value="${context:mcastInfraName}"/>
+                            <data name="serviceProfile" value="IPTV_Single_VLAN"/>
+                            <data name="permittedPackages" value="default"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-ont-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="type" value="ont"/>
+                            <data name="target" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                        <selectors>
+                            <selector key="expectedSerialNumber" type="regex" optional="true">
+                                <![CDATA[<ont:expected-serial-number>(.+?)</ont:expected-serial-number>]]>
+                            </selector>
+                            <selector key="expectedRegistrationId" type="regex" optional="true">
+                                <![CDATA[<ont:expected-registration-id>(.+?)</ont:expected-registration-id>]]>
+                            </selector>
+                            <selector key="expectedLoid" type="regex" optional="true">
+                                <![CDATA[<ont:expected-loid>(.+?)</ont:expected-loid>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}"/>
+                            <data name="authInfo" value="${nbiMetaData:AUTHINFO}"/>
+                            <data name="expectedSerialNumber" value="${context:expectedSerialNumber}" optional="true"/>
+                            <data name="expectedRegistrationId" value="${context:expectedRegistrationId}"
+                                  optional="true"/>
+                            <data name="expectedLoid" value="${context:expectedLoid}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONUBW">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="ontSpeedProfile" value="${nbiMetaData:UPBW}_${nbiMetaData:DOWNBW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="onuPort" value="${nbiMetaData:ONUPORT}"/>
+                            <data name="uniSpeedProfile" value="${nbiMetaData:BW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="505"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-mcast-user-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="mcastUserTarget" value="${context:l2UserTarget}"/>
+                            <data name="maxGroupNumber" value="${nbiMetaData:MAXGRP}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2UserTarget}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VOIPVLAN}"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-agent-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="sipAgentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="voipL2InfraName" value="${context:l2InfraName}"/>
+                            <data name="ipMode" value="${nbiMetaData:IPMODE}" optional="true"/>
+                            <data name="ipAddress" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="netmask" value="${nbiMetaData:IPMASK}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="serviceName" value="${context:l2InfraName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                            <data name="sipAddressOfRecord" value="${nbiMetaData:SIPREGDM}"/>
+                            <data name="sipDisplayName" value="${nbiMetaData:PHONENUMBER}"/>
+                            <data name="sipUserName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipPassword" value="${nbiMetaData:SIPUSERPWD}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:l2InfraName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-standard-voip-sip-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                        <selectors>
+                            <selector key="voipSipUserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:voipSipUserTarget}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="RST-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="reset-ont.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+    <!-- customized mpm-gpon-xgs-JOA_XS240GA_ONT_TYPE templates for tests -->
+    <service-template olttype="device-mf" pontype="mpm-gpon-xgs" servicetype="JOA_XS240GA_ONT_TYPE" onusubtype="">
+        <oss-command name="ADD-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-ont-for-device-mf-mpm-JOA_XS240GA_ONT_TYPE.ftl">
+                        <model>
+                            <data name="ontTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="fiberName" value="${sbiMetaData:PONTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}" optional="true"/>
+                            <data name="onuId" value="${nbiMetaData:ONUID}"/>
+                            <data name="onuNo" value="${nbiMetaData:ONUNO}" optional="true"/>
+                            <data name="ponType" value="xgs"/>
+                            <data name="onuServiceProfile" value="JOA_ONU_SERVICE"/>
+                            <data name="onuSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsServiceProfile" value="default"/>
+                            <data name="uniPortServiceProfile4q" value="JOA_UNI_Service_4q"/>
+                            <data name="uniPortServiceProfile8q" value="JOA_UNI_Service_8q"/>
+                            <data name="uniSpeedProfile" value="JOA_ONT-Speed-Control-Profile"/>
+                            <data name="potsPortServiceProfile" value="default"/>
+                            <data name="ontName" value="${nbiMetaData:NAME}" optional="true"/>
+                            <data name="ontIP" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="creationUser" value="${userInfo:username}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${nbiMetaData:ONUID}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex" optional="true">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="!${context:serviceName}">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="VEIP_${nbiMetaData:SVLAN}.${nbiMetaData:CVLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="l2InfraTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"
+                                  to-context="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl" condition="${context:l2InfraTarget}">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="VEIP"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${nbiMetaData:ONUID}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-PONVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-user-device-name-and-q-vlan-id.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                            <data name="cVlanId" value="${nbiMetaData:CVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="serviceName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=1">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI1"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=2">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI2"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=3">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI3"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-user-for-multiple-scenarios.ftl" condition="${nbiMetaData:ONUPORTID}=4">
+                        <model>
+                            <data name="templateName" value="${context:serviceName}" to-context="true"/>
+                            <data name="serviceName" value="${context:serviceName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                            <data name="serviceProfile" value="JOA_HSI_VSI4"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:templateName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:UV}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANPORTVLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="intentTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-with-dependent-intents.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:intentTarget}"/>
+                            <data name="intentType" value="l2-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <!-- for LANx port -->
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <!-- for VEIP port -->
+                            <!--data name="uniId" value="VEIP"/-->
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-mcast-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                        </model>
+                        <selectors>
+                            <selector key="mcastInfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-mcast-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="l2InfraName" value="${context:l2InfraName}"/>
+                            <data name="l2UserName" value="${context:l2UserName}"/>
+                            <data name="mcastInfraName" value="${context:mcastInfraName}"/>
+                            <data name="serviceProfile" value="IPTV_Single_VLAN"/>
+                            <data name="permittedPackages" value="default"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <!--data name="uniId" value="VEIP"/-->
+                            <data name="qVlanId" value="${nbiMetaData:UV}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:MVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraName}#${context:l2UserName}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-ont-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="type" value="ont"/>
+                            <data name="target" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                        <selectors>
+                            <selector key="expectedSerialNumber" type="regex" optional="true">
+                                <![CDATA[<ont:expected-serial-number>(.+?)</ont:expected-serial-number>]]>
+                            </selector>
+                            <selector key="expectedRegistrationId" type="regex" optional="true">
+                                <![CDATA[<ont:expected-registration-id>(.+?)</ont:expected-registration-id>]]>
+                            </selector>
+                            <selector key="expectedLoid" type="regex" optional="true">
+                                <![CDATA[<ont:expected-loid>(.+?)</ont:expected-loid>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="authType" value="${nbiMetaData:AUTHTYPE}"/>
+                            <data name="authInfo" value="${nbiMetaData:AUTHINFO}"/>
+                            <data name="expectedSerialNumber" value="${context:expectedSerialNumber}" optional="true"/>
+                            <data name="expectedRegistrationId" value="${context:expectedRegistrationId}"
+                                  optional="true"/>
+                            <data name="expectedLoid" value="${context:expectedLoid}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-ONUBW">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="ontSpeedProfile" value="${nbiMetaData:UPBW}_${nbiMetaData:DOWNBW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANIPTVPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                            <!--data name="uniId" value="VEIP"/-->
+                            <data name="qVlanId" value="405"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2UserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="modify-mcast-user-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="mcastUserTarget" value="${context:l2UserTarget}"/>
+                            <data name="maxGroupNumber" value="${nbiMetaData:MAXGRP}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2UserTarget}"/>
+                            <data name="intentType" value="mcast-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="modify-ont-with-multiple-scenarios.ftl">
+                        <model>
+                            <data name="ontTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="onuPort" value="${nbiMetaData:ONUPORT}"/>
+                            <data name="uniSpeedProfile" value="${nbiMetaData:BW}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="ont"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="CFG-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VOIPVLAN}"/>
+                            <data name="sVlanId" value="${nbiMetaData:SVLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraName" type="regex">
+                                <![CDATA[<ibn:target>[^#]+#([^<]+)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-agent-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="sipAgentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="voipL2InfraName" value="${context:l2InfraName}"/>
+                            <data name="ipMode" value="${nbiMetaData:IPMODE}" optional="true"/>
+                            <data name="ipAddress" value="${nbiMetaData:IP}" optional="true"/>
+                            <data name="netmask" value="${nbiMetaData:IPMASK}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-standard-voip-sip-user-for-multiple-scenarios.ftl">
+                        <model>
+                            <data name="serviceName" value="${context:l2InfraName}"/>
+                            <data name="customerName" value="${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                            <data name="sipAddressOfRecord" value="${nbiMetaData:SIPREGDM}"/>
+                            <data name="sipDisplayName" value="${nbiMetaData:PHONENUMBER}"/>
+                            <data name="sipUserName" value="${nbiMetaData:SIPUSERNAME}"/>
+                            <data name="sipPassword" value="${nbiMetaData:SIPUSERPWD}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget"
+                                  value="${context:l2InfraName}#${sbiMetaData:ONUTARGETNAME}-${nbiMetaData:VOIPVLAN}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VOIPSERVICE">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-standard-voip-sip-user-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="userDeviceName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                        <selectors>
+                            <selector key="voipSipUserTarget" type="regex">
+                                <![CDATA[<ibn:target>(.+?)</ibn:target>]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:voipSipUserTarget}"/>
+                            <data name="intentType" value="standard-voip-sip-user"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="intentType" value="standard-voip-sip-agent"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-LANPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="LAN${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="unlock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DACT-VOIPPORT">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="lock-uni.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                            <data name="uniId" value="TEL${nbiMetaData:ONUPORTID}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="RST-ONU">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="reset-ont.ftl">
+                        <model>
+                            <data name="ontTargetName" value="${sbiMetaData:ONUTARGETNAME}"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="ADD-VLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="${nbiMetaData:SERVICE}=HSI">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="${nbiMetaData:SERVICE}_0.${nbiMetaData:VLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="portList" value="${nbiMetaData:PORTLIST}" optional="true"/>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="serviceDesc" value="${nbiMetaData:DESC}"/>
+                            <data name="mVlanFlag" value="${nbiMetaData:MVLANFLAG}" optional="true"/>
+                            <data name="mVlanPri" value="${nbiMetaData:MVLANPRI}" optional="true"/>
+                            <data name="serviceType" value="${nbiMetaData:SERVICE}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="${nbiMetaData:SERVICE}=IPTV">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="${nbiMetaData:SERVICE}_0.${nbiMetaData:VLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="multicast-vpn"/>
+                            <data name="portList" value="${nbiMetaData:PORTLIST}" optional="true"/>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="serviceDesc" value="${nbiMetaData:DESC}"/>
+                            <data name="mVlanFlag" value="${nbiMetaData:MVLANFLAG}" optional="true"/>
+                            <data name="mVlanPri" value="${nbiMetaData:MVLANPRI}" optional="true"/>
+                            <data name="serviceType" value="${nbiMetaData:SERVICE}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="create-l2-infra-for-multiple-scenarios.ftl" condition="${nbiMetaData:SERVICE}=VOIP">
+                        <model>
+                            <data name="oltTarget" value="${sbiMetaData:OLTTARGETNAME}"/>
+                            <data name="serviceName" value="${nbiMetaData:SERVICE}_0.${nbiMetaData:VLAN}"
+                                  to-context="true"/>
+                            <data name="vlanMode" value="residential-bridge"/>
+                            <data name="portList" value="${nbiMetaData:PORTLIST}" optional="true"/>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                            <data name="forwarderProfile" value="Unicast"/>
+                            <data name="serviceProfile" value="Unicast"/>
+                            <data name="serviceDesc" value="${nbiMetaData:DESC}"/>
+                            <data name="mVlanFlag" value="${nbiMetaData:MVLANFLAG}" optional="true"/>
+                            <data name="mVlanPri" value="${nbiMetaData:MVLANPRI}" optional="true"/>
+                            <data name="serviceType" value="${nbiMetaData:SERVICE}" optional="true"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="sync-intent.ftl">
+                        <model>
+                            <data name="intentTarget" value="${sbiMetaData:OLTTARGETNAME}#${context:serviceName}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+
+        <oss-command name="DEL-VLAN">
+            <netconf-request>
+                <request-instance>
+                    <rpc file="query-l2-infra-by-multiple-conditions.ftl">
+                        <model>
+                            <data name="cVlanId" value="${nbiMetaData:VLAN}"/>
+                        </model>
+                        <selectors>
+                            <selector key="l2InfraTarget" type="xpath">
+                                <![CDATA[//ibn:ibn/ibn:intent[not(ibn:intent-specific-data/l2infra:l2-infra/l2infra:s-vlan-id)]/ibn:target]]>
+                            </selector>
+                        </selectors>
+                    </rpc>
+                </request-instance>
+                <request-instance>
+                    <rpc file="delete-intent-from-network-and-controller.ftl">
+                        <model>
+                            <data name="intentTarget" value="${context:l2InfraTarget}"/>
+                            <data name="intentType" value="l2-infra"/>
+                        </model>
+                    </rpc>
+                </request-instance>
+            </netconf-request>
+        </oss-command>
+    </service-template>
+
+</service-templates>

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-joa-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joa-gateway
+  template:
+    metadata:
+      labels:
+        app: joa-gateway
+    spec:
+      containers:
+      - name: local-joa-gateway
+        image: joa-gateway
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+          # - name: JOA_RT1AGENT_SECURITY_KEYCLOAK_AUTHSERVERURL
+          #   value: https://core-sso-headless:8443/core-sso
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 20
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 60
+          failureThreshold: 3
+          timeoutSeconds: 3

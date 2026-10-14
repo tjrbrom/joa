@@ -1,0 +1,55 @@
+# Default values for joa-rt1agent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  name: joa-rt1agent
+  #securityMode: keycloak
+  #keycloakUrl: https://core-sso-headless:8443/core-sso
+env:
+  name: joa-rt1agent
+  #securityMode: keycloak
+  #keycloakUrl: https://core-sso-headless:8443/core-sso
+
+replicaCount: 1
+
+image:
+  # docker pull registry/repository:tag
+  registry: ${artifactory.url}
+  repository: joa-rt1agent
+  pullPolicy: IfNotPresent
+  tag: ${rt1-agent.version}
+
+service:
+  type: NodePort
+  ports:
+    protocol: TCP
+    port: 12015
+    targetPort: 12015
+    nodePort: 32015
+
+startupProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 20
+  timeoutSeconds: 3
+  httpGet:
+    port: 28080
+
+livenessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 15
+  periodSeconds: 60
+  successThreshold: 1
+  timeoutSeconds: 3
+  httpGet:
+    port: 28080
+
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

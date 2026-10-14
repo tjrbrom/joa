@@ -1,0 +1,73 @@
+server:
+  port: 28080
+# health check endpoint: /actuator/health
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health'
+
+spring:
+  application:
+    name: joa-rt1agent
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+  config:
+    import:
+      - nacos:joa-common.properties?refresh=true
+      - nacos:joa-rt1.properties?refresh=true
+
+joa.application:
+  command-group:
+    enabled: false
+#    groups:
+#      joa-rt1sa:
+#        - ADD-ONU
+#        - DEL-ONU
+#      joa-rt1query:
+#        - LST-ONU
+#        - LST-DEVICE
+
+joa.rt1.vault-auth:
+  enabled: false
+  
+aip.base-url: http://aip-aip-auth:9200
+
+joa.mds:
+  base-url: http://joa-mds:8080
+  
+joa.rt1.ponnbi-forwarding:
+  enabled: false
+  host: ponnbi
+  port: 12015
+  username: manager
+  password: 123456
+  encoding: UTF-8
+  idle-timeout-minutes: -1
+
+joa.rt1:
+  connection:
+    port: 12015
+    encoding: UTF-8
+    max-connections: 10
+    idle-timeout-minutes: 30
+#    ip-whitelist:
+#    - 0.0.0.0/0
+#    - ::/0
+  security:
+    mode: keycloak
+    keycloak:
+      auth-server-url: https://core-sso-headless:8443/core-sso
+      realm: master
+      clientId: CORE_JOA
+      secret: a9428765-ddc4-485c-8bf1-897f39264eb2
+      resourceId: CORE_JOA_RT1
+
+joa.rt1agent:
+  load-balance:
+    policy: RANDOM
+  cloud:
+    subscribed-services: joa-rt1sa,joa-rt1query
+
+    

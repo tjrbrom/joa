@@ -1,0 +1,55 @@
+server:
+  port: 28082
+# health check endpoint: /actuator/health
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health'
+
+spring:
+  application:
+    name: joa-rt1query
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        metadata:
+          command-group: ${joa.service.command-group}
+  config:
+    import:
+      - nacos:joa-common.properties?refresh=true
+      - nacos:joa-rt1.properties?refresh=true
+  freemarker:
+    template-loader-path: file:${template.file-path}
+
+joa.service:
+  command-group: joa-rt1query
+
+core:
+  host: 127.0.0.1
+  rest:
+    baseUrl: https://127.0.0.1/local-core-ac
+    username: adminuser
+    password: password
+  virtualizer:
+    target: AV
+  password: 
+    algorithm: AES/CBC/PKCS5Padding
+    key: RoylVjNWp293yL7aRQtyGtyMnJfIPqzxmnRZzTAREkc=
+
+service:
+  config-path: /joa/config
+
+command:
+  file-path: /joa/config/commands
+
+passthrough:
+  file-path: /joa/config/passthrough
+
+template:
+  file-path: /joa/config/templates
+
+paging:
+  page_enable: false
+  page_max_num: 20

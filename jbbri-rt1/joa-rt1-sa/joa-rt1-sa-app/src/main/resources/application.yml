@@ -1,0 +1,45 @@
+server:
+  port: 28081
+# health check endpoint: /actuator/health
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health'
+
+joa.service:
+  command-group: joa-rt1sa
+
+spring:
+  application:
+    name: joa-rt1sa
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        metadata:
+          command-group: ${joa.service.command-group}
+  config:
+    import:
+      - nacos:joa-common.properties?refresh=true
+      - nacos:joa-rt1.properties?refresh=true
+  freemarker:
+    template-loader-path: file:${template.file-path}
+
+
+core:
+  host: 127.0.0.1
+  rest:
+    baseUrl: https://127.0.0.1/x-core-ac
+    username: adminuser
+    password: password
+
+service:
+  config-path: /joa/config
+
+command:
+  file-path: /joa/config/commands
+
+template:
+  file-path: /joa/config/templates
+
