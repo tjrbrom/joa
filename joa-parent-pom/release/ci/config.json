@@ -1,0 +1,40 @@
+{
+    "global": {
+        "maven": "",
+        "docker": "",
+        "env": {}
+    },
+    "build": {
+        "maven": {
+            "joa-parent-pom": "-Dprofile -Drevision=${build_tag}"
+        },
+        "docker": {}
+    },
+    "ut": {},
+    "sonar": {},
+    "deploy": {
+        "maven": {
+            "module": [],
+            "files": []
+        },
+        "maven_internal": {
+            "module": [],
+            "files": []
+        },
+        "docker_internal": {
+            "module": []
+        },
+        "helm": {
+            "module": [],
+            "files": []
+        },
+        "docker": {
+            "module": []
+        }
+    },
+    "lint": {},
+    "foss": {
+        "ignore_repo": true,
+        "ignore_module_path": []
+    }
+}

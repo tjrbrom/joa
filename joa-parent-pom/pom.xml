@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.x.hhqs.joa</groupId>
+    <artifactId>joa-parent-pom</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>JOA Parent Pom</description>
+
+    <properties>
+        <revision>1.0.0-SNAPSHOT</revision>
+        <!-- Encoding -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Java version -->
+        <java.version>17</java.version>
+        <!-- Maven plugins -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <maven.helm.plugin.version>6.15.0</maven.helm.plugin.version>
+        <maven.antrun.plugin.version>3.1.0</maven.antrun.plugin.version>
+        <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
+        <maven.buildnumber.plugin.version>3.2.0</maven.buildnumber.plugin.version>
+        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
+        <maven-surefire-report-plugin.version>3.3.1</maven-surefire-report-plugin.version>
+        <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
+        <docker-maven-plugin.version>1.2.2</docker-maven-plugin.version>
+        <org.sonarsource.scanner.maven.version>3.11.0.3922</org.sonarsource.scanner.maven.version>
+        <maven.dependency.plugin.version>3.7.1</maven.dependency.plugin.version>
+        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+        <!-- Helm Charts -->
+        <artifactory.url>artifactory.net.x.com</artifactory.url>
+        <helm.repo.name>stable-repo</helm.repo.name>
+        <helm.repo.artifactory>"@artifactory"</helm.repo.artifactory>
+        <helm.repo.baseurl>http://127.0.0.1:30879</helm.repo.baseurl>
+        <helm.repo.url>${helm.repo.baseurl}/api/charts</helm.repo.url>
+        <helm.repo.type>CHARTMUSEUM</helm.repo.type>
+        <helm.artifactory.username>""</helm.artifactory.username>
+        <helm.artifactory.password>""</helm.artifactory.password>
+        <helm.chart.version>${revision}</helm.chart.version>
+        <!-- X/HHQS Dependencies -->
+        <registry.host>artifactory-blr-hhqs.int.net.x.com</registry.host>
+        <hhqs.base.java17.image>hhqs-base-java17</hhqs.base.java17.image>
+        <hhqs.base.java17.image.version>x-1.1.9</hhqs.base.java17.image.version>
+        <hhqs.container.version>${revision}</hhqs.container.version>
+        <hhqs.specificBuild>${revision}</hhqs.specificBuild>
+        <baseImage>${registry.host}:9000/${hhqs.base.java17.image}:${hhqs.base.java17.image.version}</baseImage>
+        <!-- Spring dependencies -->
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <spring-cloud-alibaba.version>2021.0.6.2</spring-cloud-alibaba.version>
+        <spring-boot-admin.version>2.7.3</spring-boot-admin.version>
+        <spring-boot.mybatis>2.2.2</spring-boot.mybatis>
+        <spring-boot.mybatis-plus>3.4.0</spring-boot.mybatis-plus>
+        <!-- Other 3rd dependencies -->
+        <org.json.version>20231013</org.json.version>
+        <org.apache.felix.version>5.6.10</org.apache.felix.version>
+        <org.osgi.version>4.2.0</org.osgi.version>
+        <javax.ws.rs.version>2.1</javax.ws.rs.version>
+        <javax.annotation.version>1.3.2</javax.annotation.version>
+        <commons-io.version>2.7</commons-io.version>
+        <org.freemarker.version>2.3.30</org.freemarker.version>
+        <fluency.version>2.4.0</fluency.version>
+        <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+        <logback-more-appenders.version>1.8.7</logback-more-appenders.version>
+        <guava.version>33.4.0-jre</guava.version>
+        <commons.text.version>1.10.0</commons.text.version>
+        <opensearch.version>2.12.0</opensearch.version>
+        <commons-net.version>3.9.0</commons-net.version>
+        <com.github.mwiede.jsch.version>0.2.21</com.github.mwiede.jsch.version>
+        <jakarta.json-api.version>2.1.1</jakarta.json-api.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
+        <swagger.fox.version>3.0.0</swagger.fox.version>
+        <swagger.core.version>1.6.2</swagger.core.version>
+        <commons.csv.version>1.8</commons.csv.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <commons.fileupload.version>1.4</commons.fileupload.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <commons-collections4.version>4.1</commons-collections4.version>
+        <avro.apache.version>1.11.0</avro.apache.version>
+        <dom4j.version>2.1.4</dom4j.version>
+        <druid.version>1.2.11</druid.version>
+        <dynamic-ds.version>3.5.1</dynamic-ds.version>
+        <elasticsearch.version>7.17.5</elasticsearch.version>
+        <fastjson.version>2.0.14</fastjson.version>
+        <glassfish.javax.json.version>1.0.4</glassfish.javax.json.version>
+        <gson.version>2.10.1</gson.version>
+        <jaxb.version>2.3.1</jaxb.version>
+        <jaxen.version>1.2.0</jaxen.version>
+        <jboss.common.beans>2.0.1.Final</jboss.common.beans>
+        <jjwt.version>0.9.1</jjwt.version>
+        <joda.time.version>2.8</joda.time.version>
+        <jsch.version>0.1.55</jsch.version>
+        <keycloak.version>24.0.5</keycloak.version>
+        <lombok.version>1.18.24</lombok.version>
+        <mockito.version>1.10.19</mockito.version>
+        <nimbus-jose-jwt.version>9.14_x_patch_1</nimbus-jose-jwt.version>
+        <oauth2-oidc-sdk.version>9.35</oauth2-oidc-sdk.version>
+        <pagehelper.boot.version>1.4.3</pagehelper.boot.version>
+        <powermock.version>1.6.2</powermock.version>
+        <poi.version>4.1.2</poi.version>
+        <smiley.http.proxy.servlet.version>1.12.1</smiley.http.proxy.servlet.version>
+        <transmittable-thread-local.version>2.13.2</transmittable-thread-local.version>
+        <xerces.version>2.12.0</xerces.version>
+        <redisson.version>3.13.6</redisson.version>
+        <hutool-all.version>5.8.36</hutool-all.version>
+        <org.xmlunit.version>2.9.1</org.xmlunit.version>
+        <jersey-common.version>2.6</jersey-common.version>
+        <commons-compress.version>1.21</commons-compress.version>
+        <opendaylight.yangtools.version>3.0.16</opendaylight.yangtools.version>
+        <pax.logging.version>2.0.19</pax.logging.version>
+        <systemrule.version>1.19.0</systemrule.version>
+        <sardine.version>5.7</sardine.version>
+        <urlrewritefilter.version>4.0.4</urlrewritefilter.version>
+        <xmlbeans.version>3.0.2</xmlbeans.version>
+        <xmlbeans4.version>4.0.0</xmlbeans4.version>
+        <jaxb.core.version>2.3.0.1</jaxb.core.version>
+        <jaxb.impl.version>2.3.1</jaxb.impl.version>
+        <mariadb-java-client.version>2.6.2</mariadb-java-client.version>
+        <remoting-jmx.version>3.1.0.Final</remoting-jmx.version>
+        <hhqs-init-container.version>x-2.3.8</hhqs-init-container.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.jersey</groupId>
+                        <artifactId>jersey-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.hdrhistogram</groupId>
+                        <artifactId>HdrHistogram</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${org.osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${org.apache.felix.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.rs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${org.json.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${org.freemarker.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.komamitsu</groupId>
+                <artifactId>fluency-core</artifactId>
+                <version>${fluency.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.komamitsu</groupId>
+                <artifactId>fluency-fluentd</artifactId>
+                <version>${fluency.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>${logstash-logback-encoder.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sndyuk</groupId>
+                <artifactId>logback-more-appenders</artifactId>
+                <version>${logback-more-appenders.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-authz-client</artifactId>
+                <version>${keycloak.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons.text.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opensearch.client</groupId>
+                <artifactId>opensearch-java</artifactId>
+                <version>${opensearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opensearch.client</groupId>
+                <artifactId>opensearch-rest-client</artifactId>
+                <version>${opensearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>${commons-net.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.mwiede</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${com.github.mwiede.jsch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${jakarta.json-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-server</artifactId>
+                <version>${spring-boot-admin.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${spring-boot.mybatis}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${spring-boot.mybatis-plus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-ds.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+                <version>${swagger.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons.csv.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons.fileupload.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.json</artifactId>
+                <version>${glassfish.javax.json.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.fox.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.fox.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <optional>true</optional>
+            </dependency>
+
+            <dependency>
+                <groupId>org.dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>${jaxen.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb.impl.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda.time.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+                <version>${avro.apache.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mitre.dsmiley.httpproxy</groupId>
+                <artifactId>smiley-http-proxy-servlet</artifactId>
+                <version>${smiley.http.proxy.servlet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-adapter-bom</artifactId>
+                <version>${keycloak.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-spring-boot-starter</artifactId>
+                <version>${keycloak.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.common</groupId>
+                <artifactId>jboss-common-beans</artifactId>
+                <version>${jboss.common.beans}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>oauth2-oidc-sdk</artifactId>
+                <version>${oauth2-oidc-sdk.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>${jersey-common.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.xmlunit</groupId>
+                <artifactId>xmlunit-core</artifactId>
+                <version>${org.xmlunit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.tuckey</groupId>
+                <artifactId>urlrewritefilter</artifactId>
+                <version>${urlrewritefilter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.lookfirst</groupId>
+                <artifactId>sardine</artifactId>
+                <version>${sardine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.stefanbirkner</groupId>
+                <artifactId>system-rules</artifactId>
+                <version>${systemrule.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb-java-client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.remotingjmx</groupId>
+                <artifactId>remoting-jmx</artifactId>
+                <version>${remoting-jmx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>${flatten-maven-plugin.version}</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile>
+                        <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>flatten.clean</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${maven-surefire-report-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${org.sonarsource.scanner.maven.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <phase>test</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>${maven.antrun.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <configuration>
+                                <target>
+                                    <echo message="Creating helm repo directory"/>
+                                    <mkdir dir="${basedir}/target/helm/repo/"/>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>copy-resources</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <useDefaultDelimiters>true</useDefaultDelimiters>
+                                <outputDirectory>${basedir}/target/helm/</outputDirectory>
+                                <encoding>UTF-8</encoding>
+                                <resources>
+                                    <resource>
+                                        <directory>
+                                            ${basedir}/target/classes
+                                        </directory>
+                                        <includes>
+                                            <include>**/*.*</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                                <includeEmptyDirs/>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <nonFilteredFileExtensions>
+                            <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+                        </nonFilteredFileExtensions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.kokuwa.maven</groupId>
+                    <artifactId>helm-maven-plugin</artifactId>
+                    <version>${maven.helm.plugin.version}</version>
+                    <configuration>
+                        <chartDirectory>${basedir}/target/helm/</chartDirectory>
+                        <chartVersion>${helm.chart.version}</chartVersion>
+                        <uploadRepoStable>
+                            <name>${helm.repo.name}</name>
+                            <url>${helm.repo.url}</url>
+                            <type>${helm.repo.type}</type>
+                            <username>${helm.artifactory.username}</username>
+                            <password>${helm.artifactory.password}</password>
+                        </uploadRepoStable>
+                        <useLocalHelmBinary>true</useLocalHelmBinary>
+                        <excludes>
+                            <exclude>${project.basedir}/excluded</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>lint</goal>
+                                <goal>dependency-build</goal>
+                                <goal>package</goal>
+                                <goal>upload</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>${maven.buildnumber.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <doCheck>false</doCheck>
+                        <doUpdate>false</doUpdate>
+                        <format>{0}, {1,date,dd MMM yyyy}</format>
+                        <items>
+                            <item>scmVersion</item>
+                            <item>timestamp</item>
+                        </items>
+                        <revisionOnScmFailure>UNKNOWN</revisionOnScmFailure>
+                        <shortRevisionLength>5</shortRevisionLength>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
+        <profile>
+            <id>jacoco</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration></configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
